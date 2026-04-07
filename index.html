@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>境外提現免費指南</title>
-<link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#F7F7F5" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#111112" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="./manifest.json">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -76,7 +76,7 @@
   }
 
   /* SEARCH */
-  .search-wrap { padding: 0 0 12px; position: relative; }
+  .search-wrap { padding: 0 0 12px; display: flex; align-items: center; position: relative; }
   .search-input {
     width: 100%; padding: 10px 14px 10px 36px;
     border: 1.5px solid var(--border-strong); border-radius: 10px;
@@ -86,9 +86,11 @@
   }
   .search-input:focus { border-color: var(--accent); }
   .search-icon {
-    position: absolute; left: 12px; top: 11px;
+    position: absolute; left: 12px;
+    top: 50%; transform: translateY(-50%);
     width: 14px; height: 14px;
     color: var(--text-light); pointer-events: none;
+    display: flex; align-items: center;
   }
 
   /* FILTER CHIPS */
@@ -157,9 +159,10 @@
   .bank-name-row { display: flex; align-items: center; gap: 10px; }
   .bank-avatar {
     width: 38px; height: 38px; border-radius: 10px;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; overflow: hidden;
   }
-  .bank-avatar svg { width: 20px; height: 20px; }
+  .bank-avatar svg { width: 38px; height: 38px; border-radius: 10px; }
   .bank-name { font-size: 15px; font-weight: 600; line-height: 1.2; }
   .bank-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
   .bank-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
@@ -368,21 +371,36 @@
 
 <script>
 const IC = {
-  bld: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/></svg>`,
-  card: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="6" y1="15" x2="10" y2="15"/></svg>`,
-  globe: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>`,
-  xfer: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>`,
+  // 興業銀行 - 紅色IB
+  xinye:`<svg viewBox="0 0 40 40"><rect width="40" height="40" rx="10" fill="#C8102E"/><text x="20" y="26" text-anchor="middle" fill="white" font-size="14" font-weight="700" font-family="sans-serif">IB</text></svg>`,
+  // 上海銀行 - 藍色SHB
+  shanghai:`<svg viewBox="0 0 40 40"><rect width="40" height="40" rx="10" fill="#003087"/><text x="20" y="26" text-anchor="middle" fill="white" font-size="11" font-weight="700" font-family="sans-serif">SHB</text></svg>`,
+  // 長沙銀行 - 紅綠
+  changsha:`<svg viewBox="0 0 40 40"><rect width="40" height="40" rx="10" fill="#E30613"/><text x="20" y="26" text-anchor="middle" fill="white" font-size="11" font-weight="700" font-family="sans-serif">CSB</text></svg>`,
+  // 中信銀行 - 深紅
+  citic:`<svg viewBox="0 0 40 40"><rect width="40" height="40" rx="10" fill="#9B0000"/><text x="20" y="26" text-anchor="middle" fill="white" font-size="10" font-weight="700" font-family="sans-serif">CITIC</text></svg>`,
+  // Wise - 綠色
+  wise:`<svg viewBox="0 0 40 40"><rect width="40" height="40" rx="10" fill="#00B67A"/><text x="20" y="27" text-anchor="middle" fill="white" font-size="13" font-weight="800" font-family="sans-serif">W</text></svg>`,
+  // 中銀 - 紅綠BOC
+  boc:`<svg viewBox="0 0 40 40"><rect width="40" height="40" rx="10" fill="#CC0000"/><rect x="0" y="27" width="40" height="13" rx="0" fill="#006400"/><path d="M0 27h40" stroke="white" stroke-width="1"/><text x="20" y="20" text-anchor="middle" fill="white" font-size="10" font-weight="700" font-family="sans-serif">BOC</text><text x="20" y="36" text-anchor="middle" fill="white" font-size="8" font-weight="600" font-family="sans-serif">HK</text></svg>`,
+  // 匯豐 - 紅白六角
+  hsbc:`<svg viewBox="0 0 40 40"><rect width="40" height="40" rx="10" fill="#DB0011"/><polygon points="20,6 34,14 34,26 20,34 6,26 6,14" fill="none" stroke="white" stroke-width="2"/><polygon points="20,6 34,20 20,20" fill="white"/><polygon points="20,20 34,20 20,34" fill="white" opacity="0.4"/></svg>`,
+  // 恒生 - 綠色HSB
+  hangseng:`<svg viewBox="0 0 40 40"><rect width="40" height="40" rx="10" fill="#009966"/><text x="20" y="22" text-anchor="middle" fill="white" font-size="10" font-weight="700" font-family="sans-serif">hang</text><text x="20" y="33" text-anchor="middle" fill="white" font-size="10" font-weight="700" font-family="sans-serif">seng</text></svg>`,
+  // 東亞 - 藍色BEA
+  bea:`<svg viewBox="0 0 40 40"><rect width="40" height="40" rx="10" fill="#003865"/><text x="20" y="26" text-anchor="middle" fill="white" font-size="13" font-weight="700" font-family="sans-serif">BEA</text></svg>`,
+  // 信銀 - 深紅CNCBI
+  chiyu:`<svg viewBox="0 0 40 40"><rect width="40" height="40" rx="10" fill="#8B0000"/><text x="20" y="22" text-anchor="middle" fill="white" font-size="9" font-weight="700" font-family="sans-serif">CNCBI</text><text x="20" y="33" text-anchor="middle" fill="#FFD700" font-size="8" font-family="sans-serif">信銀</text></svg>`,
 };
 
 const BANKS = [
   {
     id:'xinye', name:'興業銀行', subtitle:'大陸銀行',
-    icon:IC.bld, iconBg:'#E8EFF5', iconColor:'#1A3C5E',
+    logo:IC.xinye,
     tags:['mainland'],
-    badges:[{t:'3筆/月',c:'badge-amber'},{t:'ATM免費',c:'badge-green'},{t:'免外幣費',c:'badge-green'}],
+    badges:[{t:'3筆/月',c:'badge-amber'}],
     sections:[
       {label:'特點',items:[
-        {i:'✓',c:'good',t:'境外 ATM 提款免手續費'},
         {i:'⚠',c:'warn',t:'每月限 3 筆免費'},
       ]},
       {label:'支援地區 / ATM 網絡',items:[
@@ -396,12 +414,11 @@ const BANKS = [
   },
   {
     id:'shanghai', name:'上海銀行', subtitle:'大陸銀行',
-    icon:IC.bld, iconBg:'#E8F5EE', iconColor:'#1A6B45',
+    logo:IC.shanghai,
     tags:['unlimited','mainland'],
-    badges:[{t:'無限次',c:'badge-green'},{t:'ATM免費',c:'badge-green'},{t:'免外幣費',c:'badge-green'}],
+    badges:[{t:'無限次',c:'badge-green'}],
     sections:[
       {label:'特點',items:[
-        {i:'✓',c:'good',t:'境外 ATM 提款免手續費'},
         {i:'✓',c:'good',t:'次數無限制'},
       ]},
       {label:'支援地區 / ATM 網絡',items:[
@@ -416,12 +433,11 @@ const BANKS = [
   },
   {
     id:'changsha', name:'長沙銀行', subtitle:'大陸銀行',
-    icon:IC.bld, iconBg:'#E8F5EE', iconColor:'#1A6B45',
+    logo:IC.changsha,
     tags:['unlimited','mainland'],
-    badges:[{t:'無限次',c:'badge-green'},{t:'ATM免費',c:'badge-green'},{t:'免外幣費',c:'badge-green'}],
+    badges:[{t:'無限次',c:'badge-green'}],
     sections:[
       {label:'特點',items:[
-        {i:'✓',c:'good',t:'境外 ATM 提款免手續費'},
         {i:'✓',c:'good',t:'次數無限制'},
       ]},
       {label:'支援地區 / ATM 網絡',items:[
@@ -436,13 +452,13 @@ const BANKS = [
   },
   {
     id:'citic', name:'中信萬事達', subtitle:'大陸銀行',
-    icon:IC.card, iconBg:'#FEF7E8', iconColor:'#8B5E00',
+    logo:IC.citic,
     tags:['mainland'],
-    badges:[{t:'3筆/月',c:'badge-amber'},{t:'ATM免費',c:'badge-green'}],
+    badges:[{t:'3筆/月',c:'badge-amber'}],
     sections:[
       {label:'特點',items:[
-        {i:'✓',c:'good',t:'境外 ATM 提款免手續費'},
         {i:'⚠',c:'warn',t:'每月限 3 筆'},
+        {i:'✓',c:'good',t:'日本 7-Bank ATM 免費'},
       ]},
       {label:'支援地區 / ATM 網絡',items:[
         {i:'—',c:'',t:'中銀'},{i:'—',c:'',t:'中東'},
@@ -452,7 +468,7 @@ const BANKS = [
   },
   {
     id:'wise', name:'Wise', subtitle:'數字匯款平台',
-    icon:IC.xfer, iconBg:'#E8F5EE', iconColor:'#1A6B45',
+    logo:IC.wise,
     tags:['digital'],
     badges:[{t:'2筆/月免費',c:'badge-amber'},{t:'多幣兌換',c:'badge-blue'}],
     sections:[
@@ -460,7 +476,6 @@ const BANKS = [
         {i:'✓',c:'good',t:'每月首 2 筆、總額不超過 350 CAD 免費'},
         {i:'⚠',c:'warn',t:'超額後每筆 1.50 CAD；超出 350 CAD 部分另收 1.75%'},
         {i:'✓',c:'good',t:'免外幣手續費（中間匯率）'},
-        {i:'⚠',c:'warn',t:'將於 2026 年 5 月 1 日重新計算'},
       ]},
       {label:'支援地區 / ATM 網絡',items:[
         {i:'—',c:'',t:'日本（Aeon）'},{i:'—',c:'',t:'台灣（台灣銀行、國泰世華、兆豐）'},
@@ -476,7 +491,7 @@ const BANKS = [
   },
   {
     id:'boc', name:'中銀扣賬卡', subtitle:'香港銀行 · 中國銀行（香港）',
-    icon:IC.card, iconBg:'#FEF7E8', iconColor:'#8B5E00',
+    logo:IC.boc,
     tags:['unlimited','hk'],
     badges:[{t:'全球單免',c:'badge-green'},{t:'泰國全免',c:'badge-green'}],
     sections:[
@@ -484,6 +499,7 @@ const BANKS = [
         {i:'✓',c:'good',t:'澳門用呢張先免'},
         {i:'✓',c:'good',t:'泰國中銀 ATM 全免'},
         {i:'✓',c:'good',t:'全球其他 ATM 單免（ATM 機器費另計）'},
+        {i:'✓',c:'good',t:'日本 7-Bank ATM 免費'},
         {i:'✓',c:'good',t:'免外幣手續費'},
       ]},
       {label:'支援貨幣',items:[
@@ -493,9 +509,9 @@ const BANKS = [
   },
   {
     id:'hsbc', name:'匯豐扣賬卡', subtitle:'香港銀行 · 匯豐',
-    icon:IC.card, iconBg:'#E8EFF5', iconColor:'#1A3C5E',
-    tags:['hk'],
-    badges:[{t:'全球匯豐免',c:'badge-green'},{t:'非匯豐收費',c:'badge-amber'}],
+    logo:IC.hsbc,
+    tags:['unlimited','hk'],
+    badges:[{t:'無限次',c:'badge-green'},{t:'全球匯豐免',c:'badge-green'},{t:'非匯豐收費',c:'badge-amber'}],
     sections:[
       {label:'特點',items:[
         {i:'✓',c:'good',t:'澳門用呢張先免'},
@@ -513,9 +529,9 @@ const BANKS = [
   },
   {
     id:'hangseng', name:'恒生扣賬卡', subtitle:'香港銀行 · 恒生',
-    icon:IC.card, iconBg:'#E8EFF5', iconColor:'#1A3C5E',
-    tags:['hk'],
-    badges:[{t:'全球單免',c:'badge-green'}],
+    logo:IC.hangseng,
+    tags:['unlimited','hk'],
+    badges:[{t:'無限次',c:'badge-green'},{t:'全球匯豐免',c:'badge-green'},{t:'非匯豐收費',c:'badge-amber'}],
     sections:[
       {label:'特點',items:[
         {i:'✓',c:'good',t:'澳門用呢張先免'},
@@ -526,16 +542,19 @@ const BANKS = [
       {label:'支援貨幣',items:[
         {i:'—',c:'',t:'澳元、加拿大元、瑞士法郎、歐元、英鎊、港幣、日圓、紐西蘭元、人民幣、泰銖、美元和南非蘭特'},
       ]},
+      {label:'備註',items:[
+        {i:'⚠',c:'warn',t:'出行前確認目的地有無匯豐 ATM'},
+      ]},
     ],
   },
   {
     id:'bea', name:'東亞扣賬卡', subtitle:'香港銀行 · 東亞',
-    icon:IC.card, iconBg:'#F0F0EE', iconColor:'#888884',
+    logo:IC.bea,
     tags:['unlimited','hk'],
-    badges:[{t:'ATM全球免',c:'badge-green'},{t:'非支援外幣1.95%',c:'badge-red'}],
+    badges:[{t:'無限次',c:'badge-green'},{t:'全球單免',c:'badge-green'},{t:'非支援外幣1.95%',c:'badge-red'}],
     sections:[
       {label:'特點',items:[
-        {i:'✓',c:'good',t:'ATM 提款全球全免'},
+        {i:'✓',c:'good',t:'ATM 提款全球單免（ATM 機器費另計）'},
         {i:'✗',c:'bad',t:'非支援外幣收 1.95% 手續費'},
         {i:'✓',c:'good',t:'日本 7-Bank ATM 免費'},
       ]},
@@ -546,12 +565,12 @@ const BANKS = [
   },
   {
     id:'chiyu', name:'信銀扣賬卡', subtitle:'香港銀行 · 信銀',
-    icon:IC.card, iconBg:'#F0F0EE', iconColor:'#888884',
+    logo:IC.chiyu,
     tags:['unlimited','hk'],
-    badges:[{t:'ATM全球免',c:'badge-green'},{t:'非支援外幣1.95%',c:'badge-red'}],
+    badges:[{t:'無限次',c:'badge-green'},{t:'全球單免',c:'badge-green'},{t:'非支援外幣1.95%',c:'badge-red'}],
     sections:[
       {label:'特點',items:[
-        {i:'✓',c:'good',t:'ATM 提款全球全免'},
+        {i:'✓',c:'good',t:'ATM 提款全球單免（ATM 機器費另計）'},
         {i:'✗',c:'bad',t:'非支援外幣收 1.95% 手續費'},
         {i:'✓',c:'good',t:'日本 7-Bank ATM 免費'},
       ]},
@@ -601,7 +620,7 @@ function renderBanks(){
       <div class="bank-card-header" onclick="toggle('${b.id}')">
         <div>
           <div class="bank-name-row">
-            <div class="bank-avatar" style="background:${b.iconBg};color:${b.iconColor};">${b.icon}</div>
+            <div class="bank-avatar">${b.logo}</div>
             <div><div class="bank-name">${b.name}</div><div class="bank-subtitle">${b.subtitle}</div></div>
           </div>
           <div class="bank-badges">${bdg}</div>
@@ -629,6 +648,11 @@ function switchTab(tab){
   document.getElementById('filterRow').style.display=show?'':'none';
 }
 renderBanks();
+</script>
+<script>
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js');
+}
 </script>
 </body>
 </html>
