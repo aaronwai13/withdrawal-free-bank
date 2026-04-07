@@ -1,6 +1,6 @@
 {
-  "name": "境外提現免費指南",
-  "short_name": "提現指南",
+  "name": "境外撳錢免費指南",
+  "short_name": "撳錢指南",
   "description": "境外 ATM 免手續費銀行查詢",
   "start_url": "./",
   "display": "standalone",
