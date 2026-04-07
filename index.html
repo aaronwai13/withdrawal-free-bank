@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>境外提現免費指南</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#F7F7F5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F7F5;
+    --white: #FFFFFF;
+    --text: #111110;
+    --text-muted: #888884;
+    --text-light: #BBBBB8;
+    --border: #E5E5E2;
+    --border-strong: #D0D0CC;
+    --accent: #1A3C5E;
+    --accent-light: #E8EFF5;
+    --green: #1A6B45;
+    --green-light: #E8F5EE;
+    --red: #C0392B;
+    --red-light: #FDF0EE;
+    --amber: #8B5E00;
+    --amber-light: #FEF7E8;
+    --shadow: 0 2px 12px rgba(0,0,0,0.07);
+    --tab-h: 60px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Figtree', sans-serif;
+    min-height: 100vh;
+    font-size: 15px;
+    padding-bottom: calc(var(--tab-h) + env(safe-area-inset-bottom, 0px));
+  }
+
+  #app { max-width: 480px; margin: 0 auto; }
+
+  /* HEADER */
+  .header {
+    background: var(--white);
+    padding: 20px 20px 0;
+    border-bottom: 1px solid var(--border);
+    position: sticky; top: 0; z-index: 20;
+  }
+  .header-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; }
+  .header-title { font-family: 'DM Serif Display', serif; font-size: 22px; line-height: 1.15; }
+  .header-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; font-family: 'DM Mono', monospace; }
+  .update-badge {
+    font-size: 10px; font-family: 'DM Mono', monospace;
+    background: var(--accent-light); color: var(--accent);
+    padding: 4px 8px; border-radius: 6px; white-space: nowrap; margin-top: 2px;
+  }
+
+  /* SEARCH */
+  .search-wrap {
+    padding: 0 0 12px;
+    position: relative;
+  }
+  .search-input {
+    width: 100%; padding: 10px 14px 10px 36px;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 10px; font-size: 14px;
+    font-family: 'Figtree', sans-serif;
+    background: var(--bg); color: var(--text);
+    outline: none; transition: border-color 0.2s;
+  }
+  .search-input:focus { border-color: var(--accent); }
+  .search-icon {
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    color: var(--text-light); pointer-events: none;
+  }
+
+  /* TAB BAR */
+  .tab-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    height: var(--tab-h); background: var(--white);
+    border-top: 1px solid var(--border);
+    display: flex; z-index: 100;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    max-width: 480px; margin: 0 auto;
+  }
+  .tab-bar::after {
+    content: ''; position: absolute;
+    bottom: calc(-1 * env(safe-area-inset-bottom, 0px));
+    left: 0; right: 0;
+    height: env(safe-area-inset-bottom, 0px);
+    background: var(--white);
+  }
+  .tab-btn {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 3px;
+    cursor: pointer; border: none; background: none;
+    color: var(--text-muted); font-family: 'Figtree', sans-serif;
+    font-size: 10px; font-weight: 600; letter-spacing: 0.3px;
+    transition: color 0.2s; outline: none;
+    position: relative;
+  }
+  .tab-btn.active { color: var(--accent); }
+  .tab-btn.active::before {
+    content: ''; position: absolute; top: 0; left: 25%; right: 25%;
+    height: 2px; background: var(--accent); border-radius: 0 0 3px 3px;
+  }
+  .tab-icon { font-size: 18px; line-height: 1; }
+
+  /* PAGES */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* FILTER CHIPS */
+  .filter-row {
+    padding: 10px 20px; display: flex; gap: 8px;
+    overflow-x: auto; scrollbar-width: none;
+    border-bottom: 1px solid var(--border);
+    background: var(--white);
+  }
+  .filter-row::-webkit-scrollbar { display: none; }
+  .chip {
+    flex-shrink: 0; padding: 6px 14px;
+    border-radius: 99px; font-size: 12px; font-weight: 600;
+    border: 1.5px solid var(--border-strong);
+    background: transparent; color: var(--text-muted);
+    cursor: pointer; font-family: 'Figtree', sans-serif;
+    white-space: nowrap; transition: all 0.15s;
+  }
+  .chip.active { background: var(--accent); color: white; border-color: var(--accent); }
+
+  /* BANK CARDS */
+  .banks-list { padding: 16px 16px; display: flex; flex-direction: column; gap: 12px; }
+
+  .bank-card {
+    background: var(--white); border-radius: 14px;
+    border: 1px solid var(--border);
+    overflow: hidden; box-shadow: var(--shadow);
+    transition: box-shadow 0.2s;
+  }
+  .bank-card-header {
+    padding: 16px 16px 12px;
+    display: flex; align-items: flex-start; justify-content: space-between;
+    cursor: pointer;
+  }
+  .bank-name-row { display: flex; align-items: center; gap: 10px; }
+  .bank-avatar {
+    width: 36px; height: 36px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0; font-weight: 700;
+    font-family: 'DM Mono', monospace;
+  }
+  .bank-name { font-size: 15px; font-weight: 600; line-height: 1.2; }
+  .bank-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .bank-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  .badge {
+    font-size: 10px; font-weight: 600; padding: 3px 8px;
+    border-radius: 6px; font-family: 'DM Mono', monospace;
+    letter-spacing: 0.3px; white-space: nowrap;
+  }
+  .badge-green { background: var(--green-light); color: var(--green); }
+  .badge-amber { background: var(--amber-light); color: var(--amber); }
+  .badge-red { background: var(--red-light); color: var(--red); }
+  .badge-blue { background: var(--accent-light); color: var(--accent); }
+  .badge-gray { background: #F0F0EE; color: var(--text-muted); }
+
+  .expand-btn {
+    color: var(--text-light); transition: transform 0.25s;
+    flex-shrink: 0; margin-top: 4px;
+    background: none; border: none; cursor: pointer;
+    padding: 4px;
+  }
+  .bank-card.open .expand-btn { transform: rotate(180deg); }
+
+  .bank-body {
+    max-height: 0; overflow: hidden;
+    transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1);
+    border-top: 0px solid var(--border);
+  }
+  .bank-card.open .bank-body {
+    max-height: 600px;
+    border-top-width: 1px;
+  }
+  .bank-body-inner { padding: 14px 16px 16px; }
+
+  .detail-section { margin-bottom: 12px; }
+  .detail-section:last-child { margin-bottom: 0; }
+  .detail-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.8px;
+    text-transform: uppercase; color: var(--text-light);
+    margin-bottom: 6px;
+  }
+  .detail-item {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 13px; color: var(--text); margin-bottom: 4px;
+    line-height: 1.45;
+  }
+  .detail-item:last-child { margin-bottom: 0; }
+  .detail-dot { font-size: 13px; flex-shrink: 0; margin-top: 0; }
+  .detail-item.warn { color: var(--amber); }
+  .detail-item.good { color: var(--green); }
+  .detail-item.bad { color: var(--red); }
+
+  /* TIPS PAGE */
+  .tips-container { padding: 16px; }
+  .tips-card {
+    background: var(--white); border-radius: 14px;
+    border: 1px solid var(--border); padding: 18px;
+    margin-bottom: 12px; box-shadow: var(--shadow);
+  }
+  .tips-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 17px; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .tips-list { display: flex; flex-direction: column; gap: 8px; }
+  .tip-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 13px; line-height: 1.5; color: var(--text);
+  }
+  .tip-num {
+    flex-shrink: 0; width: 20px; height: 20px;
+    border-radius: 50%; background: var(--accent-light);
+    color: var(--accent); font-size: 11px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    margin-top: 1px;
+  }
+
+  /* COMPARE TABLE */
+  .compare-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -16px; padding: 0 16px; }
+  .compare-table { border-collapse: collapse; min-width: 460px; width: 100%; font-size: 12px; }
+  .compare-table th {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 0.5px; text-transform: uppercase;
+    color: var(--text-muted); padding: 8px 10px;
+    text-align: left; border-bottom: 1.5px solid var(--border-strong);
+    background: var(--white);
+  }
+  .compare-table td {
+    padding: 10px 10px; border-bottom: 1px solid var(--border);
+    color: var(--text); vertical-align: top;
+  }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table tr:hover td { background: var(--bg); }
+  .cell-good { color: var(--green); font-weight: 600; }
+  .cell-warn { color: var(--amber); font-weight: 600; }
+  .cell-bad { color: var(--red); }
+
+  .empty-state {
+    text-align: center; padding: 48px 20px;
+    color: var(--text-muted); font-size: 14px;
+  }
+  .empty-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.5; }
+
+  /* Section heading inside pages */
+  .section-eyebrow {
+    font-size: 10px; font-weight: 700; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--text-light);
+    padding: 14px 16px 6px;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-top">
+      <div>
+        <div class="header-title">境外提現<br>免費指南</div>
+        <div class="header-sub">ATM / 免手續費查詢</div>
+      </div>
+      <div class="update-badge">更新 2025.06</div>
+    </div>
+    <div class="search-wrap" id="searchWrap" style="display:none;">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="search-input" id="searchInput" placeholder="搜尋銀行或地區…" oninput="filterBanks()">
+    </div>
+  </div>
+
+  <!-- PAGE: 銀行列表 -->
+  <div class="page active" id="pageCards">
+    <div class="filter-row" id="filterRow">
+      <button class="chip active" onclick="setFilter('all', this)">全部</button>
+      <button class="chip" onclick="setFilter('atm_free', this)">ATM免費</button>
+      <button class="chip" onclick="setFilter('unlimited', this)">無限次</button>
+      <button class="chip" onclick="setFilter('hk', this)">香港銀行</button>
+      <button class="chip" onclick="setFilter('mainland', this)">內地銀行</button>
+      <button class="chip" onclick="setFilter('digital', this)">數字/虛擬</button>
+    </div>
+    <div class="banks-list" id="banksList"></div>
+  </div>
+
+  <!-- PAGE: 比較表 -->
+  <div class="page" id="pageCompare">
+    <div class="tips-container">
+      <div class="tips-card">
+        <div class="tips-title">📊 快速比較</div>
+        <div class="compare-scroll">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>銀行</th>
+                <th>ATM免費</th>
+                <th>外幣手續費</th>
+                <th>次數限制</th>
+                <th>備註</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><b>興業銀行</b></td><td class="cell-good">✓ 免</td><td class="cell-good">✓ 免</td><td class="cell-warn">3筆/月</td><td>境外ATM免費</td></tr>
+              <tr><td><b>上海銀行</b></td><td class="cell-good">✓ 免</td><td class="cell-good">✓ 免</td><td class="cell-good">無限次</td><td>—</td></tr>
+              <tr><td><b>長沙銀行</b></td><td class="cell-good">✓ 免</td><td class="cell-good">✓ 免</td><td class="cell-good">無限次</td><td>—</td></tr>
+              <tr><td><b>中信萬事達</b></td><td class="cell-good">✓ 免</td><td class="cell-good">✓ 免</td><td class="cell-warn">3筆/月</td><td>需申請指定卡</td></tr>
+              <tr><td><b>Wise</b></td><td class="cell-warn">部分免</td><td class="cell-good">✓ 免</td><td class="cell-warn">2筆/月</td><td>超額收費</td></tr>
+              <tr><td><b>中銀萬事達</b></td><td class="cell-good">✓ 免</td><td class="cell-good">✓ 免</td><td class="cell-good">全免</td><td>泰國全免</td></tr>
+              <tr><td><b>匯豐獅子</b></td><td class="cell-good">✓ 免</td><td class="cell-good">✓ 免</td><td class="cell-warn">需匯豐ATM</td><td>非匯豐收費</td></tr>
+              <tr><td><b>恒生扣賬卡</b></td><td class="cell-good">✓ 免</td><td class="cell-good">✓ 免</td><td class="cell-good">全球免</td><td>澳門本行匯率</td></tr>
+              <tr><td><b>東亞扣賬卡</b></td><td class="cell-good">✓ 免</td><td class="cell-bad">✗ 1.95%</td><td class="cell-good">全球免</td><td>外幣收費</td></tr>
+              <tr><td><b>信銀扣賬卡</b></td><td class="cell-good">✓ 免</td><td class="cell-bad">✗ 1.95%</td><td class="cell-good">全球免</td><td>外幣收費</td></tr>
+              <tr><td><b>渣打扣賬卡</b></td><td class="cell-bad">✗ 不免</td><td class="cell-bad">✗ 0.95%</td><td class="cell-bad">全不免</td><td>條件嚴苛</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: 貼士 -->
+  <div class="page" id="pageTips">
+    <div class="tips-container">
+      <div class="tips-card">
+        <div class="tips-title">💡 使用貼士</div>
+        <div class="tips-list">
+          <div class="tip-item"><div class="tip-num">1</div><div>提款前確認 ATM 屬邊間網絡（Visa/Mastercard/Plus/Cirrus），唔同銀行對應唔同 ATM 免費。</div></div>
+          <div class="tip-item"><div class="tip-num">2</div><div>Wise 每月免費額度係 350 美元，超過後每筆收 1.5-2 美元 + 2% 手續費，要注意！</div></div>
+          <div class="tip-item"><div class="tip-num">3</div><div>興業 / 中信萬事達每月只有 3 筆免費，計劃好提款次數，避免超額。</div></div>
+          <div class="tip-item"><div class="tip-num">4</div><div>泰國 ATM 通常收 220 泰銖（約 HKD 50）手續費，用中銀萬事達泰國全免最著數。</div></div>
+          <div class="tip-item"><div class="tip-num">5</div><div>匯豐獅子卡喺非匯豐 ATM 每筆收 40 港幣 + ATM 費用，出行前確認目的地有無匯豐 ATM。</div></div>
+          <div class="tip-item"><div class="tip-num">6</div><div>渣打扣賬卡條件最差：帳戶內外幣唔夠支付，或不支援該外幣，即收 0.95% 手續費。</div></div>
+          <div class="tip-item"><div class="tip-num">7</div><td>建議配搭：日常用上海/長沙（無限次）+ 旅行熱點用中銀萬事達 + 備用 Wise。</div></div>
+        </div>
+      </div>
+
+      <div class="tips-card">
+        <div class="tips-title">🌏 熱門地區推薦</div>
+        <div class="tips-list">
+          <div class="tip-item"><div class="tip-num" style="background:#FEF7E8;color:#8B5E00;">泰</div><div><b>泰國：</b>中銀萬事達（全免）、匯豐獅子（全球免）、恒生扣賬卡</div></div>
+          <div class="tip-item"><div class="tip-num" style="background:#E8F5EE;color:#1A6B45;">日</div><div><b>日本：</b>上海銀行、長沙銀行（7-Bank / Aeon 兼容）</div></div>
+          <div class="tip-item"><div class="tip-num" style="background:#E8EFF5;color:#1A3C5E;">星</div><div><b>新加坡：</b>中銀萬事達（UOB）、Wise</div></div>
+          <div class="tip-item"><div class="tip-num" style="background:#FDF0EE;color:#C0392B;">歐</div><div><b>歐洲：</b>Wise（多幣兌換）、匯豐獅子</div></div>
+          <div class="tip-item"><div class="tip-num" style="background:#F0F0EE;color:#888884;">馬</div><div><b>馬來西亞：</b>Wise（UOB/Maybank/CIMB）、興業銀行</div></div>
+        </div>
+      </div>
+
+      <div class="tips-card">
+        <div class="tips-title">⚠️ 注意事項</div>
+        <div class="tips-list">
+          <div class="tip-item">
+            <div class="tip-num" style="background:var(--red-light);color:var(--red);">!</div>
+            <div>部分地區 ATM 會問「帳戶貨幣」定「當地貨幣」——<b>務必揀「當地貨幣」</b>，否則 ATM 自行換匯匯率極差（Dynamic Currency Conversion）。</div>
+          </div>
+          <div class="tip-item">
+            <div class="tip-num" style="background:var(--red-light);color:var(--red);">!</div>
+            <div>Wise 超出免費額度後費率高，唔適合頻繁大額提款。</div>
+          </div>
+          <div class="tip-item">
+            <div class="tip-num" style="background:var(--amber-light);color:var(--amber);">i</div>
+            <div>以上資料以公開資訊為準，銀行政策可能更新，使用前建議再確認最新條款。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- TAB BAR (outside #app to fix to bottom) -->
+<div class="tab-bar" style="position:fixed;bottom:0;left:0;right:0;max-width:480px;left:50%;transform:translateX(-50%);">
+  <button class="tab-btn active" id="tabCards" onclick="switchTab('Cards')">
+    <span class="tab-icon">🏦</span>
+    <span>銀行</span>
+  </button>
+  <button class="tab-btn" id="tabCompare" onclick="switchTab('Compare')">
+    <span class="tab-icon">📊</span>
+    <span>比較</span>
+  </button>
+  <button class="tab-btn" id="tabTips" onclick="switchTab('Tips')">
+    <span class="tab-icon">💡</span>
+    <span>貼士</span>
+  </button>
+</div>
+
+<script>
+// ===== DATA =====
+const BANKS = [
+  {
+    id: 'xinye',
+    name: '興業銀行',
+    subtitle: '大陸銀行',
+    avatar: '興', avatarBg: '#E8EFF5', avatarColor: '#1A3C5E',
+    tags: ['atm_free', 'mainland'],
+    badges: [
+      { text: '3筆/月', cls: 'badge-amber' },
+      { text: 'ATM免費', cls: 'badge-green' },
+    ],
+    highlights: [
+      { icon: '✓', cls: 'good', text: 'ATM 提款免手續費（境外）' },
+      { icon: '✓', cls: 'good', text: '免外幣手續費' },
+      { icon: '⚠', cls: 'warn', text: '每月限 3 筆免費' },
+    ],
+    countries: ['韓國（樂天）', '泰國（BOC）', '香港（全部）', '台灣（台灣銀行、國泰世華、兆豐）', '越南（BIDV）', '新加坡（UOB）', '馬來西亞（Maybank）', '印尼（BCA、BNI）', '迪拜（NBD）', '格魯吉亞（BOG）'],
+    notes: [],
+  },
+  {
+    id: 'shanghai',
+    name: '上海銀行',
+    subtitle: '大陸銀行',
+    avatar: '滬', avatarBg: '#E8F5EE', avatarColor: '#1A6B45',
+    tags: ['atm_free', 'unlimited', 'mainland'],
+    badges: [
+      { text: '無限次', cls: 'badge-green' },
+      { text: 'ATM免費', cls: 'badge-green' },
+    ],
+    highlights: [
+      { icon: '✓', cls: 'good', text: 'ATM 提款全球免手續費' },
+      { icon: '✓', cls: 'good', text: '次數無限制' },
+    ],
+    countries: [],
+    notes: ['適合頻繁出行人士首選'],
+  },
+  {
+    id: 'changsha',
+    name: '長沙銀行',
+    subtitle: '大陸銀行',
+    avatar: '長', avatarBg: '#E8F5EE', avatarColor: '#1A6B45',
+    tags: ['atm_free', 'unlimited', 'mainland'],
+    badges: [
+      { text: '無限次', cls: 'badge-green' },
+      { text: 'ATM免費', cls: 'badge-green' },
+    ],
+    highlights: [
+      { icon: '✓', cls: 'good', text: 'ATM 提款全球免手續費' },
+      { icon: '✓', cls: 'good', text: '次數無限制' },
+    ],
+    countries: [],
+    notes: [],
+  },
+  {
+    id: 'citic',
+    name: '中信萬事達',
+    subtitle: '大陸銀行',
+    avatar: '信', avatarBg: '#FEF7E8', avatarColor: '#8B5E00',
+    tags: ['atm_free', 'mainland'],
+    badges: [
+      { text: '3筆/月', cls: 'badge-amber' },
+      { text: 'ATM免費', cls: 'badge-green' },
+    ],
+    highlights: [
+      { icon: '✓', cls: 'good', text: 'ATM 提款免費（境外）' },
+      { icon: '⚠', cls: 'warn', text: '每月限 3 筆' },
+    ],
+    countries: ['中銀', '中東', '信銀', '日本（7 Bank）'],
+    notes: [],
+  },
+  {
+    id: 'wise',
+    name: 'Wise',
+    subtitle: '數字匯款平台',
+    avatar: 'W', avatarBg: '#E8F5EE', avatarColor: '#1A6B45',
+    tags: ['atm_free', 'digital'],
+    badges: [
+      { text: '2筆/月', cls: 'badge-amber' },
+      { text: '多幣兌換', cls: 'badge-blue' },
+    ],
+    highlights: [
+      { icon: '✓', cls: 'good', text: '每月 2 筆 / 350 USD 內免費' },
+      { icon: '⚠', cls: 'warn', text: '超額收 1.5-2 USD + 2% 手續費' },
+      { icon: '✓', cls: 'good', text: '免外幣手續費（中間匯率）' },
+    ],
+    countries: ['日本（Aeon）', '台灣（台灣銀行、國泰世華、兆豐）', '越南（Viet、TP、VP）', '新加坡（UOB、Maybank）', '馬來西亞（CIMB、Maybank、Alliance、Public、Affin、BSN）', '印尼（BCA、BNI、Mandiri、BRI）', '格魯吉亞（BOG、Credo、Basisbank、Cartu、Ziraat）'],
+    notes: ['適合偶爾提款，頻繁使用超額費用高'],
+  },
+  {
+    id: 'boc_mc',
+    name: '中銀萬事達',
+    subtitle: '香港銀行 · 香港中國銀行',
+    avatar: '中', avatarBg: '#FEF7E8', avatarColor: '#8B5E00',
+    tags: ['atm_free', 'unlimited', 'hk'],
+    badges: [
+      { text: '全球免', cls: 'badge-green' },
+      { text: '泰國全免', cls: 'badge-green' },
+    ],
+    highlights: [
+      { icon: '✓', cls: 'good', text: '澳門用本行匯率' },
+      { icon: '✓', cls: 'good', text: '全球匯豐 ATM 全免' },
+      { icon: '⚠', cls: 'warn', text: '非匯豐 ATM 單筆收 40 港幣 + ATM 費' },
+      { icon: '✓', cls: 'good', text: '免外幣手續費' },
+      { icon: '✓', cls: 'good', text: '泰國中銀全免（港元、美元、人民幣、英鎊等多種外幣）' },
+    ],
+    countries: ['泰國（中銀）全免', '全球單免'],
+    notes: [],
+  },
+  {
+    id: 'hsbc',
+    name: '匯豐獅子卡',
+    subtitle: '香港銀行 · 匯豐',
+    avatar: 'H', avatarBg: '#E8EFF5', avatarColor: '#1A3C5E',
+    tags: ['atm_free', 'hk'],
+    badges: [
+      { text: '全球匯豐免', cls: 'badge-green' },
+      { text: '非匯豐收費', cls: 'badge-amber' },
+    ],
+    highlights: [
+      { icon: '✓', cls: 'good', text: '澳門用本行匯率' },
+      { icon: '✓', cls: 'good', text: '全球匯豐 ATM 全免' },
+      { icon: '⚠', cls: 'warn', text: '非匯豐 ATM 每筆收 40 港幣 + ATM 費用' },
+      { icon: '✓', cls: 'good', text: '免外幣手續費' },
+    ],
+    countries: ['澳元、加元、瑞士法郎、歐元、英鎊、港元、日元、新西蘭元、人民幣、新加坡元、美元及泰銖'],
+    notes: ['出行前確認目的地有無匯豐 ATM'],
+  },
+  {
+    id: 'hang_seng',
+    name: '恒生扣賬卡',
+    subtitle: '香港銀行 · 恒生',
+    avatar: '恒', avatarBg: '#E8EFF5', avatarColor: '#1A3C5E',
+    tags: ['atm_free', 'unlimited', 'hk'],
+    badges: [
+      { text: '全球免', cls: 'badge-green' },
+    ],
+    highlights: [
+      { icon: '✓', cls: 'good', text: '澳門用本行匯率' },
+      { icon: '✓', cls: 'good', text: '全球匯豐 ATM 全免' },
+      { icon: '⚠', cls: 'warn', text: '非匯豐 ATM 每筆收 40 港幣 + ATM 費用' },
+      { icon: '✓', cls: 'good', text: '免外幣手續費' },
+    ],
+    countries: ['澳元、加拿大元、瑞士法郎、歐元、英鎊、港幣、日圓、紐西蘭元、人民幣、泰銖、美元和南非蘭特'],
+    notes: [],
+  },
+  {
+    id: 'bea',
+    name: '東亞扣賬卡',
+    subtitle: '香港銀行 · 東亞',
+    avatar: '東', avatarBg: '#F0F0EE', avatarColor: '#888884',
+    tags: ['atm_free', 'hk'],
+    badges: [
+      { text: 'ATM全免', cls: 'badge-green' },
+      { text: '外幣1.95%', cls: 'badge-red' },
+    ],
+    highlights: [
+      { icon: '✓', cls: 'good', text: 'ATM 提款全球全免' },
+      { icon: '✗', cls: 'bad', text: '非支援外幣收 1.95% 手續費' },
+    ],
+    countries: ['澳元、加拿大元、瑞士法郎、歐元、英鎊、港元、日元、紐西蘭元、新加坡元及美元'],
+    notes: [],
+  },
+  {
+    id: 'chiyu',
+    name: '信銀扣賬卡',
+    subtitle: '香港銀行 · 集友/信銀',
+    avatar: '集', avatarBg: '#F0F0EE', avatarColor: '#888884',
+    tags: ['atm_free', 'hk'],
+    badges: [
+      { text: 'ATM全免', cls: 'badge-green' },
+      { text: '外幣1.95%', cls: 'badge-red' },
+    ],
+    highlights: [
+      { icon: '✓', cls: 'good', text: 'ATM 提款全球全免' },
+      { icon: '✗', cls: 'bad', text: '非支援外幣收 1.95% 手續費' },
+    ],
+    countries: ['港元、人民幣、澳門元、加元、歐羅、日圓、紐元、英鎊、新加坡元及美元'],
+    notes: [],
+  },
+  {
+    id: 'scb',
+    name: '渣打扣賬卡',
+    subtitle: '香港銀行 · 渣打',
+    avatar: '渣', avatarBg: '#FDF0EE', avatarColor: '#C0392B',
+    tags: ['hk'],
+    badges: [
+      { text: '條件嚴苛', cls: 'badge-red' },
+      { text: '外幣0.95%', cls: 'badge-red' },
+    ],
+    highlights: [
+      { icon: '✗', cls: 'bad', text: 'ATM 提款不免費' },
+      { icon: '✗', cls: 'bad', text: '帳戶外幣不足以支付全數，收 0.95% 外幣交易手續費' },
+      { icon: '✗', cls: 'bad', text: '不支援該外幣亦收 0.95%' },
+    ],
+    countries: ['港幣、美元、人民幣、澳元、加元、瑞士法郎、歐羅、英鎊、日元、紐西蘭元及新加坡元'],
+    notes: ['條件最差，需確保帳戶有足夠對應外幣'],
+  },
+];
+
+let currentFilter = 'all';
+let currentSearch = '';
+let openCards = new Set();
+
+function setFilter(filter, el) {
+  currentFilter = filter;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderBanks();
+}
+
+function filterBanks() {
+  currentSearch = document.getElementById('searchInput').value.toLowerCase();
+  renderBanks();
+}
+
+function renderBanks() {
+  const list = document.getElementById('banksList');
+  let filtered = BANKS.filter(b => {
+    if (currentFilter !== 'all' && !b.tags.includes(currentFilter)) return false;
+    if (currentSearch) {
+      const haystack = (b.name + b.subtitle + b.countries.join(' ')).toLowerCase();
+      if (!haystack.includes(currentSearch)) return false;
+    }
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">🔍</div>搵唔到相關銀行</div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map(b => {
+    const isOpen = openCards.has(b.id);
+    const badges = b.badges.map(bd => `<span class="badge ${bd.cls}">${bd.text}</span>`).join('');
+    const highlights = b.highlights.map(h =>
+      `<div class="detail-item ${h.cls}"><span class="detail-dot">${h.icon}</span><span>${h.text}</span></div>`
+    ).join('');
+    const countriesHtml = b.countries.length > 0 ? `
+      <div class="detail-section">
+        <div class="detail-label">支援地區 / ATM 網絡</div>
+        ${b.countries.map(c => `<div class="detail-item"><span class="detail-dot" style="color:var(--text-light)">—</span><span>${c}</span></div>`).join('')}
+      </div>` : '';
+    const notesHtml = b.notes.length > 0 ? `
+      <div class="detail-section">
+        <div class="detail-label">備註</div>
+        ${b.notes.map(n => `<div class="detail-item warn"><span class="detail-dot">⚠</span><span>${n}</span></div>`).join('')}
+      </div>` : '';
+
+    return `
+    <div class="bank-card${isOpen ? ' open' : ''}" id="card-${b.id}">
+      <div class="bank-card-header" onclick="toggleCard('${b.id}')">
+        <div>
+          <div class="bank-name-row">
+            <div class="bank-avatar" style="background:${b.avatarBg};color:${b.avatarColor};">${b.avatar}</div>
+            <div>
+              <div class="bank-name">${b.name}</div>
+              <div class="bank-subtitle">${b.subtitle}</div>
+            </div>
+          </div>
+          <div class="bank-badges">${badges}</div>
+        </div>
+        <button class="expand-btn" onclick="toggleCard('${b.id}');event.stopPropagation()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+      </div>
+      <div class="bank-body">
+        <div class="bank-body-inner">
+          <div class="detail-section">
+            <div class="detail-label">特點</div>
+            ${highlights}
+          </div>
+          ${countriesHtml}
+          ${notesHtml}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleCard(id) {
+  if (openCards.has(id)) {
+    openCards.delete(id);
+  } else {
+    openCards.add(id);
+  }
+  const card = document.getElementById('card-' + id);
+  if (card) card.classList.toggle('open', openCards.has(id));
+}
+
+function switchTab(tab) {
+  ['Cards', 'Compare', 'Tips'].forEach(t => {
+    document.getElementById('page' + t).classList.toggle('active', t === tab);
+    document.getElementById('tab' + t).classList.toggle('active', t === tab);
+  });
+  const showSearch = tab === 'Cards';
+  document.getElementById('searchWrap').style.display = showSearch ? 'block' : 'none';
+  document.getElementById('filterRow').style.display = showSearch ? 'flex' : 'none';
+}
+
+// init
+renderBanks();
+</script>
+
+</body>
+</html>
