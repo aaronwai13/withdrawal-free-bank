@@ -557,7 +557,10 @@ function renderBanks(){
   const filtered=BANKS.filter(b=>{
     if(curFilter!=='all'&&!b.tags.includes(curFilter))return false;
     if(curSearch){
-      const hay=(b.name+b.subtitle+b.sections.map(s=>s.items.map(i=>i.t).join(' ')).join(' ')).toLowerCase();
+      const regionItems=b.sections
+        .filter(s=>s.label==='支援地區 / ATM 網絡'||s.label==='特點')
+        .map(s=>s.items.map(i=>i.t).join(' ')).join(' ');
+      const hay=(b.name+' '+b.subtitle+' '+regionItems).toLowerCase();
       if(!hay.includes(curSearch))return false;
     }
     return true;
