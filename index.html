@@ -94,11 +94,12 @@
 
   /* FILTER CHIPS */
   .filter-row {
-    display: flex; gap: 6px; flex-wrap: wrap;
+    display: flex; gap: 6px;
     padding-bottom: 10px;
   }
+  .filter-row::-webkit-scrollbar { display: none; }
   .chip {
-    flex-shrink: 0; padding: 6px 14px; border-radius: 99px;
+    flex: 1; text-align: center; padding: 6px 4px; border-radius: 99px;
     font-size: 12px; font-weight: 600;
     border: 1.5px solid var(--border-strong);
     background: transparent; color: var(--text-muted);
