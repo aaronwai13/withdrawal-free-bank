@@ -21,19 +21,20 @@ project/
 - **背景色**：固定深藍 `#1A3C5E`（唔跟 app 主題色，永遠用呢個）
 - **文字**：預設用 app 名稱第一個字，除非另有指示
 - **文字色**：固定白色
+- **字體**：固定 PingFang SC（蘋方），路徑 `/System/Library/Fonts/PingFang.ttc`
 - **圓角**：約 20–22% border-radius（192px icon → 約 40px）
 
 用以下 Python 腳本生成（需安裝 Pillow）：
 
 ```python
 from PIL import Image, ImageDraw, ImageFont
-import math
 
 SIZE = 192
 RADIUS = 40
 BG = "#1A3C5E"   # 固定深藍，唔需要改
 TEXT = "撳"       # 換成 app 名稱第一個字
 FONT_SIZE = 96
+FONT_PATH = "/System/Library/Fonts/PingFang.ttc"  # 固定 PingFang，唔需要改
 
 img = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
 draw = ImageDraw.Draw(img)
@@ -49,11 +50,7 @@ def rounded_rect(draw, xy, radius, fill):
 
 rounded_rect(draw, [0, 0, SIZE, SIZE], RADIUS, BG)
 
-try:
-    font = ImageFont.truetype("/System/Library/Fonts/PingFang.ttc", FONT_SIZE)
-except:
-    font = ImageFont.load_default()
-
+font = ImageFont.truetype(FONT_PATH, FONT_SIZE)
 bbox = draw.textbbox((0, 0), TEXT, font=font)
 w, h = bbox[2]-bbox[0], bbox[3]-bbox[1]
 draw.text(((SIZE-w)/2 - bbox[0], (SIZE-h)/2 - bbox[1]), TEXT, font=font, fill="white")
