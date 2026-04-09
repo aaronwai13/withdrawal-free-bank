@@ -18,9 +18,9 @@ project/
 
 ## Icon 生成規則
 
-- **背景色**：用 app 的主題色（`--accent`），與 CSS 保持一致
+- **背景色**：固定深藍 `#1A3C5E`（唔跟 app 主題色，永遠用呢個）
 - **文字**：預設用 app 名稱第一個字，除非另有指示
-- **文字色**：白色
+- **文字色**：固定白色
 - **圓角**：約 20–22% border-radius（192px icon → 約 40px）
 
 用以下 Python 腳本生成（需安裝 Pillow）：
@@ -31,7 +31,7 @@ import math
 
 SIZE = 192
 RADIUS = 40
-BG = "#1A3C5E"   # 換成 app 主題色
+BG = "#1A3C5E"   # 固定深藍，唔需要改
 TEXT = "撳"       # 換成 app 名稱第一個字
 FONT_SIZE = 96
 
@@ -380,7 +380,7 @@ self.addEventListener('fetch', e => {
 - [ ] 根據 app 類型決定 design 方向（參考上方表格）
 - [ ] 複製 HTML 骨架，按需保留或移除 tab bar
 - [ ] 決定主題色，更新 `--accent` 及 dark mode 對應色
-- [ ] 用 icon 腳本生成 `icon-192.png`（背景用 `--accent`，文字用 app 名第一個字）
+- [ ] 用 icon 腳本生成 `icon-192.png`（背景固定 `#1A3C5E` 深藍，白色文字，app 名第一個字）
 - [ ] 定義數據結構（`const DATA = [...]`）並寫 render 函數
 - [ ] 更新 `manifest.json` 名稱／顏色
 - [ ] 改 `sw.js` 的 `CACHE` 名稱
