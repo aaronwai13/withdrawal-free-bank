@@ -16,6 +16,74 @@ project/
 
 ---
 
+## Icon 生成規則
+
+- **背景色**：用 app 的主題色（`--accent`），與 CSS 保持一致
+- **文字**：預設用 app 名稱第一個字，除非另有指示
+- **文字色**：白色
+- **圓角**：約 20–22% border-radius（192px icon → 約 40px）
+
+用以下 Python 腳本生成（需安裝 Pillow）：
+
+```python
+from PIL import Image, ImageDraw, ImageFont
+import math
+
+SIZE = 192
+RADIUS = 40
+BG = "#1A3C5E"   # 換成 app 主題色
+TEXT = "撳"       # 換成 app 名稱第一個字
+FONT_SIZE = 96
+
+img = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
+draw = ImageDraw.Draw(img)
+
+# 圓角背景
+def rounded_rect(draw, xy, radius, fill):
+    x0, y0, x1, y1 = xy
+    draw.rectangle([x0+radius, y0, x1-radius, y1], fill=fill)
+    draw.rectangle([x0, y0+radius, x1, y1-radius], fill=fill)
+    for cx, cy in [(x0+radius, y0+radius), (x1-radius, y0+radius),
+                   (x0+radius, y1-radius), (x1-radius, y1-radius)]:
+        draw.ellipse([cx-radius, cy-radius, cx+radius, cy+radius], fill=fill)
+
+rounded_rect(draw, [0, 0, SIZE, SIZE], RADIUS, BG)
+
+try:
+    font = ImageFont.truetype("/System/Library/Fonts/PingFang.ttc", FONT_SIZE)
+except:
+    font = ImageFont.load_default()
+
+bbox = draw.textbbox((0, 0), TEXT, font=font)
+w, h = bbox[2]-bbox[0], bbox[3]-bbox[1]
+draw.text(((SIZE-w)/2 - bbox[0], (SIZE-h)/2 - bbox[1]), TEXT, font=font, fill="white")
+
+img.save("icon-192.png")
+print("Done: icon-192.png")
+```
+
+---
+
+## Design 決策原則
+
+唔需要照跟某個固定 design，根據 app 類型揀最合適嘅方向：
+
+| App 類型 | 建議 Design 方向 |
+|---|---|
+| 查詢 / 目錄 | 卡片列表 + 搜索框 + filter chips + expand/collapse |
+| 比較 / 評分 | 表格或橫向 scroll，highlight 最優選項 |
+| 工具 / 計算機 | 輸入為主，結果即時更新，減少層次 |
+| 指南 / 教學 | 長篇內容，分 section，加 numbered steps |
+| 記錄 / Tracker | 列表 + 狀態標記，支援新增／刪除 |
+
+設計時考慮：
+- Tab bar 只在有 **3 個或以上獨立頁面** 時才需要
+- 單頁內容可以直接用 section 分隔，唔需要 tab
+- 搜索框只在條目 **超過 8–10 個** 時才有意義
+- 顏色主題根據 app 調性決定，唔一定用深藍
+
+---
+
 ## index.html 骨架
 
 ```html
@@ -37,7 +105,7 @@ project/
   <meta name="theme-color" content="#F7F7F5" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#111112" media="(prefers-color-scheme: dark)">
 
-  <!-- Google Fonts -->
+  <!-- Google Fonts（按需選用） -->
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
 
   <style>/* 全部 CSS */</style>
@@ -68,7 +136,7 @@ project/
   --text-light: #BBBBB8;
   --border: #E5E5E2;
   --border-strong: #D0D0CC;
-  --accent: #1A3C5E;        /* 換成你的主題色 */
+  --accent: #1A3C5E;        /* 換成你的主題色，icon 背景色與此一致 */
   --accent-light: #E8EFF5;
   --green: #1A6B45;
   --green-light: #E8F5EE;
@@ -87,7 +155,7 @@ project/
     --text-light: #48484A;
     --border: #2A2A2C;
     --border-strong: #3A3A3C;
-    --accent: #5B9BD5;      /* dark mode 要調淺 */
+    --accent: #5B9BD5;      /* dark mode 要比 light mode 調淺 */
     --accent-light: #1A2A3A;
     --green: #4ADE80;
     --green-light: #0A2016;
@@ -100,11 +168,11 @@ project/
 }
 ```
 
-### 字型分工
+### 字型分工（可按調性換其他 Google Fonts）
 
 ```css
-font-family: 'DM Serif Display', serif;   /* 大標題 */
-font-family: 'DM Mono', monospace;        /* 數字、badge、label */
+font-family: 'DM Serif Display', serif;   /* 大標題（優雅感） */
+font-family: 'DM Mono', monospace;        /* 數字、badge、label（精準感） */
 font-family: 'Figtree', sans-serif;       /* 正文、按鈕（body default） */
 ```
 
@@ -116,9 +184,9 @@ body {
   background: var(--bg); color: var(--text);
   font-family: 'Figtree', sans-serif;
   min-height: 100vh;
-  padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); /* 留 tab bar 空間 */
+  padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px)); /* 留 tab bar 空間，無 tab bar 可刪 */
 }
-#app { max-width: 480px; margin: 0 auto; } /* 手機寬度限制 */
+#app { max-width: 480px; margin: 0 auto; }
 ```
 
 ---
@@ -135,7 +203,7 @@ body {
 }
 ```
 
-### Tab Bar（底部固定）
+### Tab Bar（底部固定，3 個頁面或以上才用）
 
 ```css
 .tab-bar {
@@ -147,7 +215,7 @@ body {
   display: flex; z-index: 100;
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
-/* 填滿 safe area 背景（iPhone 底部白條） */
+/* 填滿 iPhone 底部 safe area */
 .tab-bar::after {
   content: ''; position: absolute;
   bottom: calc(-1 * env(safe-area-inset-bottom, 0px));
@@ -309,11 +377,11 @@ self.addEventListener('fetch', e => {
 
 ## 快速開始 Checklist
 
-- [ ] 複製以上 HTML 骨架
-- [ ] 改 `--accent` 顏色
-- [ ] 定義數據結構（`const DATA = [...]`）
-- [ ] 寫 render 函數
-- [ ] 改 `manifest.json` 名稱／顏色
+- [ ] 根據 app 類型決定 design 方向（參考上方表格）
+- [ ] 複製 HTML 骨架，按需保留或移除 tab bar
+- [ ] 決定主題色，更新 `--accent` 及 dark mode 對應色
+- [ ] 用 icon 腳本生成 `icon-192.png`（背景用 `--accent`，文字用 app 名第一個字）
+- [ ] 定義數據結構（`const DATA = [...]`）並寫 render 函數
+- [ ] 更新 `manifest.json` 名稱／顏色
 - [ ] 改 `sw.js` 的 `CACHE` 名稱
-- [ ] 準備 `icon-192.png`
 - [ ] Push 到 GitHub main branch
