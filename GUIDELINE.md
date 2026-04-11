@@ -261,7 +261,6 @@ body {
   display: flex; z-index: 100;
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
-/* 填滿 iPhone 底部 safe area */
 .tab-bar::after {
   content: ''; position: absolute;
   bottom: calc(-1 * env(safe-area-inset-bottom, 0px));
@@ -306,7 +305,7 @@ window.switchTab = function(t) {
 }
 ```
 
-放喺 sticky header 入面，用 `oninput="filterItems()"` 觸發即時過濾。只在條目超過 8–10 個時才加。
+只在條目超過 8–10 個時才加。放喺 sticky header 入面，用 `oninput="filterItems()"` 觸發即時過濾。
 
 ### Expand / Collapse 卡片（純 CSS 動畫）
 
@@ -315,7 +314,7 @@ window.switchTab = function(t) {
   max-height: 0; overflow: hidden;
   transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1);
 }
-.card.open .card-body { max-height: 800px; } /* 估計最大高度 */
+.card.open .card-body { max-height: 800px; }
 .expand-btn { transition: transform 0.3s; }
 .card.open .expand-btn { transform: rotate(180deg); }
 ```
@@ -348,8 +347,7 @@ window.toggleCard = function(el) {
   overflow-x: auto; -webkit-overflow-scrolling: touch;
 }
 .chip {
-  flex-shrink: 0; text-align: center;
-  padding: 6px 12px; border-radius: 99px;
+  flex-shrink: 0; padding: 6px 12px; border-radius: 99px;
   font-size: 12px; font-weight: 600;
   border: 1.5px solid var(--border-strong);
   background: transparent; color: var(--text-muted);
@@ -467,7 +465,6 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   if (e.request.mode === 'navigate') {
-    // 主頁面：網絡優先（確保拿到最新版）
     e.respondWith(
       fetch(e.request).then(res => {
         caches.open(CACHE).then(c => c.put(e.request, res.clone()));
@@ -476,7 +473,6 @@ self.addEventListener('fetch', e => {
     );
     return;
   }
-  // 其他靜態資源：緩存優先
   e.respondWith(
     caches.match(e.request).then(cached =>
       cached || fetch(e.request).then(res => {
