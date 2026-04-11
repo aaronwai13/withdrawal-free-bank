@@ -1,158 +1,313 @@
-# 單頁 PWA App 通用開發指南（純本地版）
+# My Local App Recipe for AI
 
-適用場景：靜態資料展示類 app（查詢、比較、指南、目錄、計算機），**唔需要後端、唔需要登入**，純前端部署。
+呢份文件係我私人用嘅本地 app 開發 recipe。
+目的唔係追求通用工程最佳實踐，而係令 AI 用接近我現有純前端 app 嘅方式去修改舊 app / 建新 app。
+
+除非我明確要求，否則優先跟呢份 recipe，而唔好自行升級去 React、Next.js、TypeScript、bundler、後端、登入系統或者其他更重方案。
 
 ---
 
-## 1. 檔案結構（最精簡）
+## 1. 核心原則
 
-```
+- 優先做出可直接使用、可直接部署、可直接睇明嘅 app
+- 優先保持原生 HTML + CSS + JavaScript
+- 保持零 build step 為預設
+- 小型 app 優先單頁結構
+- 設計要有審美，但唔好變成花巧 demo
+- 修改現有 app 時，優先延續原有結構、資料流同視覺語言
+
+---
+
+## 2. Default Stack
+
+新 app 預設使用：
+
+- 單頁 `index.html`
+- 原生 HTML + CSS + JavaScript
+- 無 build step
+- 可直接靜態托管
+- 如需手機主畫面使用，加 `manifest.json` + `sw.js`
+- 如需本地資料保存，優先用 `localStorage`
+
+預設檔案結構：
+
+```text
 project/
-├── index.html      ← 全部邏輯（HTML + CSS + JS）
-├── manifest.json   ← PWA 設定
-├── sw.js           ← Service Worker
-└── icon-192.png    ← 主畫面 icon（192×192）
+├── index.html
+├── manifest.json
+├── sw.js
+└── icon-192.png
 ```
 
-唔需要 `package.json`、唔需要 build step，直接開 `index.html` 就係 app。
+唔需要 `package.json`。
+唔需要 `npm install`。
+唔需要 build pipeline。
 
 ---
 
-## 2. 命名規範
+## 3. Do Not Overengineer
+
+除非我明確要求，否則不要：
+
+- 引入 npm / pnpm / yarn
+- 加 bundler
+- 改用 TypeScript
+- 改做 React / Vue / Next.js
+- 加後端 API
+- 加登入系統
+- 為咗所謂可擴展性而重寫成大架構
+
+如果依家個 app 已經可以用，而且只係做小幅功能修改，應優先小改而唔係重構。
+
+---
+
+## 4. 什麼情況適合這套 Recipe
+
+呢套 recipe 特別適合：
+
+- 個人工具
+- 小型 directory / guide / compare app
+- calculator / utility
+- 本地 tracker
+- 本地 vocab / notes / lookup 工具
+- 無後端需求
+- 無登入需求
+- 想快速完成並直接部署
+
+如果係以下情況，先可以提出偏離呢套 recipe：
+
+- 我明確要求用框架
+- 畫面 / 狀態已經複雜到單頁明顯難維護
+- 需要多人長期協作
+- 有大量重用元件
+- 資料量大到 `localStorage` 明顯唔夠用
+
+即使要升級，都要先講清楚原因同代價。
+
+---
+
+## 5. When Editing Existing Apps
+
+如果係修改現有 app：
+
+- 先理解現有結構、命名、資料流、互動方式、UI 風格
+- 優先延續原本做法
+- 唔好為咗整齊而硬拆成框架式架構
+- 唔好隨便改動已經運作良好嘅 interaction pattern
+- 改動應盡量細、準、可預測
+- 只喺維護成本已經明顯太高時先建議拆檔或重構
+
+如果要偏離原本方向，先解釋點解原做法已經唔夠用。
+
+---
+
+## 6. Escalation Rules
+
+預設單檔。
+
+只有當出現以下情況，先建議拆成 `styles.css` / `app.js`：
+
+- `index.html` 已經太長，改動風險高
+- CSS 已經大到難以閱讀
+- JavaScript 邏輯已經難追
+- 本地資料流程愈來愈多
+- modal / tab / filter / CRUD 已經互相牽連得太緊
+- 我明確表示想提升可維護性
+
+即使拆檔，都仍然優先保持：
+
+- 無 build step
+- 原生 JavaScript
+- 可直接靜態部署
+
+拆檔順序優先：
+
+1. 先拆 `app.js`
+2. 再拆 `styles.css`
+3. 最後先考慮更重方案
+
+---
+
+## 7. Local Data Defaults
+
+如果 app 有本地互動資料，預設用 `localStorage`。
+
+適用情況：
+
+- 詞庫
+- 個人設定
+- 小量記錄
+- 本地 checklist / tracker
+- 簡單收藏 / 狀態保存
+
+常見模式：
+
+- `const STORAGE_KEY = 'app_name_v1'`
+- 頁面載入時 `loadData()`
+- 每次新增 / 修改 / 刪除後 `saveData()`
+- 如冇本地資料，回退到 `DEFAULT_DATA`
+
+典型流程：
+
+```js
+function loadData() {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  data = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_DATA));
+}
+
+function saveData() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+```
+
+如果資料量明顯變大、查詢變複雜，先考慮 `IndexedDB`。
+除非我明確要求，否則唔好主動升級到 `IndexedDB`。
+
+---
+
+## 8. Static Data Defaults
+
+如果 app 主要係展示型內容，預設用寫死常數資料：
+
+- `const DATA = [...]`
+- `const CONFIG = {...}`
+- `const TABS = [...]`
+- `const LOGOS = {...}`
+
+適用於：
+
+- 銀行 / 卡片指南
+- 比較表
+- FAQ / 教學
+- 目錄 / 清單
+- 小型 lookup app
+
+如果只係內容更新，優先直接改常數資料，而唔好設計 CMS 式結構。
+
+---
+
+## 9. Local CRUD Pattern
+
+如果 app 係本地可編輯型工具，優先用簡單 CRUD pattern：
+
+- 列表 render
+- `Add` 區塊 / page
+- `Edit` modal
+- `Delete` confirm
+- 修改後即時重新 render
+- 成功後用 toast feedback
+
+常見流程：
+
+1. `loadData()`
+2. `renderList()`
+3. 用表單新增資料
+4. 用 modal 編輯現有資料
+5. 每次變更後 `saveData()`
+6. 再 `renderList()`
+
+如果 app 已經有明確 tab 結構，優先沿用 tab workflow，而唔好改成多頁 routing。
+
+---
+
+## 10. Naming Conventions
 
 ### 檔案
-- 全部小寫 kebab-case：`index.html`、`sw.js`、`icon-192.png`
+
+- 全部小寫 kebab-case
+- 預設檔名：`index.html`、`sw.js`、`manifest.json`
 
 ### CSS
-- 組件類：語意命名（`.card`、`.filter-chip`、`.stay-item`）
-- 狀態類：`.active`、`.show`、`.open`
-- 盡量避免 `style="..."` 內聯樣式，動態生成 HTML 字串例外
+
+- 組件類用語意命名：`.card`、`.chip`、`.word-card`、`.bank-card`
+- 狀態類用：`.active`、`.show`、`.open`
+- 除非動態生成 HTML，否則盡量避免大量 inline style
 
 ### JavaScript
-- 供 HTML `onclick` 呼叫的函數：掛在 `window` 上（`window.fnName = function(){}`）
-- 內部函數：camelCase，唔需要掛 `window`
-- 靜態數據：全大寫常數（`const DATA = [...]`、`const CONFIG = {...}`）
+
+- HTML `onclick` 直接用到嘅函數掛 `window`
+- 內部函數用 camelCase
+- 靜態資料常數用大寫：`DEFAULT_DATA`、`TABS`、`LOGOS`
+- 本地儲存 key 用大寫常數：`STORAGE_KEY`
+
+### App 名稱
+
+- `<title>` 同 `manifest.json.name` 用完整名稱
+- `manifest.json.short_name` 用 2 至 4 字
 
 ---
 
-## 3. Icon 生成規則
+## 11. Design Taste
 
-- **背景色**：固定深藍 `#1A3C5E`（唔跟 app 主題色，永遠用呢個）
-- **文字**：預設用 app 名稱第一個字，除非另有指示
-- **文字色**：固定白色
-- **字體**：固定 PingFang SC（蘋方），路徑 `/System/Library/Fonts/PingFang.ttc`
-- **圓角**：約 20–22% border-radius（192px icon → 約 40px）
+我偏好嘅 app 風格：
 
-用以下 Python 腳本生成（需安裝 Pillow）：
+- 精緻、克制、有設計感
+- 唔似企業 dashboard
+- 唔似 generic SaaS template
+- 唔似 AI 自動生成 landing page
+- 手機優先，但 desktop 都要順眼
+- 一頁內盡量完成主要任務
+- 內容層次清楚，但唔好過度堆疊
 
-```python
-from PIL import Image, ImageDraw, ImageFont
+視覺方向可以參考：
 
-SIZE = 192
-RADIUS = 40
-BG = "#1A3C5E"   # 固定深藍，唔需要改
-TEXT = "撳"       # 換成 app 名稱第一個字
-FONT_SIZE = 96
-FONT_PATH = "/System/Library/Fonts/PingFang.ttc"  # 固定 PingFang，唔需要改
+- editorial utility
+- boutique app feeling
+- calm, polished, slightly premium
 
-img = Image.new("RGBA", (SIZE, SIZE), (0, 0, 0, 0))
-draw = ImageDraw.Draw(img)
+避免：
 
-def rounded_rect(draw, xy, radius, fill):
-    x0, y0, x1, y1 = xy
-    draw.rectangle([x0+radius, y0, x1-radius, y1], fill=fill)
-    draw.rectangle([x0, y0+radius, x1, y1-radius], fill=fill)
-    for cx, cy in [(x0+radius, y0+radius), (x1-radius, y0+radius),
-                   (x0+radius, y1-radius), (x1-radius, y1-radius)]:
-        draw.ellipse([cx-radius, cy-radius, cx+radius, cy+radius], fill=fill)
-
-rounded_rect(draw, [0, 0, SIZE, SIZE], RADIUS, BG)
-
-font = ImageFont.truetype(FONT_PATH, FONT_SIZE)
-bbox = draw.textbbox((0, 0), TEXT, font=font)
-w, h = bbox[2]-bbox[0], bbox[3]-bbox[1]
-draw.text(((SIZE-w)/2 - bbox[0], (SIZE-h)/2 - bbox[1]), TEXT, font=font, fill="white")
-
-img.save("icon-192.png")
-print("Done: icon-192.png")
-```
+- 紫白預設配色
+- 過重 dashboard 感
+- 太多冇意義卡片
+- 過多動畫
+- 看起來很「模板」
 
 ---
 
-## 4. Design 決策原則
+## 12. Design Decision Rules
 
-唔需要照跟某個固定 design，根據 app 類型揀最合適嘅方向：
+根據 app 類型，優先使用以下方向：
 
 | App 類型 | 建議 Design 方向 |
 |---|---|
 | 查詢 / 目錄 | 卡片列表 + 搜索框 + filter chips + expand/collapse |
 | 比較 / 評分 | 表格或橫向 scroll，highlight 最優選項 |
 | 工具 / 計算機 | 輸入為主，結果即時更新，減少層次 |
-| 指南 / 教學 | 長篇內容，分 section，加 numbered steps |
-| 記錄 / Tracker | 列表 + 狀態標記，支援新增／刪除 |
+| 指南 / 教學 | 長篇內容，分 section，加明確步驟 |
+| 本地 tracker | 列表 + 狀態標記 + 本地 CRUD |
+| 詞庫 / 筆記 / vocab 工具 | 列表 + 搜索 + filter + edit modal + quick add |
 
 設計時考慮：
-- Tab bar 只在有 **3 個或以上獨立頁面** 時才需要
-- 單頁內容可以直接用 section 分隔，唔需要 tab
-- 搜索框只在條目 **超過 8–10 個** 時才有意義
-- 顏色主題根據 app 調性決定，唔一定用深藍
+
+- Tab bar 只在有 3 個或以上獨立頁面時才用
+- 單頁內容可以直接用 section 分隔，唔需要硬加 tab
+- 搜索框只在條目超過 8 至 10 個時先值得加
+- 主操作應該一眼睇到
+- 螢幕細時，優先保留層次而唔好塞太多資訊
 
 ---
 
-## 5. index.html 骨架
+## 13. CSS System Defaults
 
-```html
-<!DOCTYPE html>
-<html lang="zh-HK">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <!-- VERSION: 2026.01.01.0 -->
-  <title>App 名稱</title>
+顏色原則：
 
-  <!-- PWA（iOS 必須） -->
-  <link rel="manifest" href="./manifest.json">
-  <link rel="apple-touch-icon" href="./icon-192.png">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="短名稱">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+- 全 app 只用一個主要 accent color
+- `green / amber / red` 只用作語義色
+- dark mode 可以調背景同文字，但唔好破壞語義色邏輯
 
-  <!-- 主題色（light/dark 各一） -->
-  <meta name="theme-color" content="#F7F7F5" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#111112" media="(prefers-color-scheme: dark)">
-
-  <!-- Google Fonts（按需選用） -->
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-  <style>/* 全部 CSS */</style>
-</head>
-<body>
-  <div id="app">
-    <!-- Header（sticky） -->
-    <!-- 頁面內容 -->
-  </div>
-  <!-- Tab Bar（fixed bottom，如有需要） -->
-  <script>/* 全部 JS */</script>
-</body>
-</html>
-```
-
----
-
-## 6. CSS 系統
-
-### 顏色變數（light/dark 自動切換）
+常用變數：
 
 ```css
 :root {
   --bg: #F7F7F5;
-  --white: #FFFFFF;        /* 卡片、header、tab bar 表面色 */
+  --white: #FFFFFF;
   --text: #111110;
   --text-muted: #888884;
   --text-light: #BBBBB8;
   --border: #E5E5E2;
   --border-strong: #D0D0CC;
-  --accent: #1A3C5E;        /* 換成你的主題色 */
+  --accent: #1A3C5E;
   --accent-light: #E8EFF5;
   --green: #1A6B45;
   --green-light: #E8F5EE;
@@ -162,367 +317,108 @@ print("Done: icon-192.png")
   --red-light: #FDF0EE;
   --shadow: 0 2px 12px rgba(0,0,0,0.07);
 }
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #111112;
-    --white: #1C1C1E;
-    --text: #F2F2F0;
-    --text-muted: #888884;
-    --text-light: #48484A;
-    --border: #2A2A2C;
-    --border-strong: #3A3A3C;
-    --accent: #5B9BD5;      /* dark mode 要比 light mode 調淺 */
-    --accent-light: #1A2A3A;
-    --green: #4ADE80;
-    --green-light: #0A2016;
-    --amber: #FCD34D;
-    --amber-light: #251A00;
-    --red: #F87171;
-    --red-light: #2A1010;
-    --shadow: 0 2px 16px rgba(0,0,0,0.4);
-  }
-}
 ```
 
-**原則：**
-- `--bg` 係頁面底色，`--white` 係卡片／header／tab bar 表面色
-- `--accent` 係唯一強調色，按鈕、連結、focus ring 全部用它
-- `--green` / `--amber` / `--red` 固定代表好 / 警告 / 壞，唔可以挪作裝飾用途
-- dark mode 只需覆蓋背景同文字系列變數，語義色保持不變
+英文字型分工：
 
-### 字型分工
-
-英文設計感 app，用 Google Fonts：
 ```css
-font-family: 'DM Serif Display', serif;   /* 大標題（優雅感） */
-font-family: 'DM Mono', monospace;        /* 數字、badge、label（精準感） */
-font-family: 'Figtree', sans-serif;       /* 正文、按鈕（body default） */
+font-family: 'DM Serif Display', serif;
+font-family: 'DM Mono', monospace;
+font-family: 'Figtree', sans-serif;
 ```
 
-中文 app，用系統字體棧（無需引入外部字型）：
+中文 app 可直接用系統字體：
+
 ```css
 font-family: -apple-system, 'SF Pro Text', 'Helvetica Neue',
              'PingFang TC', 'Microsoft JhengHei', Arial, sans-serif;
 ```
 
-### 字階
+字階原則：
 
-| 用途 | 大小 | 字重 |
-|------|------|------|
-| 頁面大標題 | 32–48px | 600 |
-| 區塊標題 | 20–24px | 600 |
-| 卡片標題 | 17–21px | 500–600 |
-| 正文 | 14–17px | 400 |
-| 輔助文字、標籤 | 11–13px | 400 |
-| 微型（時間戳、小 tag）| 10–12px | 400 |
-
-### 佈局基礎
-
-```css
-* {
-  margin: 0; padding: 0; box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
-body {
-  background: var(--bg); color: var(--text);
-  font-family: 'Figtree', sans-serif;
-  min-height: 100vh;
-  /* 留 tab bar 空間，無 tab bar 可改為 0 */
-  padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
-}
-#app { max-width: 480px; margin: 0 auto; }
-```
+- 頁面大標題：32 至 48px
+- 區塊標題：20 至 24px
+- 卡片標題：17 至 21px
+- 正文：14 至 17px
+- 輔助文字：11 至 13px
+- 微型資訊：10 至 12px
 
 ---
 
-## 7. 常用 UI 元件
+## 14. Common UI Patterns
 
-### Sticky Header
+常用元件：
 
-```css
-.header {
-  background: var(--white);
-  padding: 20px 16px 0;
-  border-bottom: 1px solid var(--border);
-  position: sticky; top: 0; z-index: 20;
-}
-```
+- sticky header
+- search bar
+- filter chips
+- card list
+- compare table
+- bottom tab bar
+- modal
+- toast
 
-### Tab Bar（底部固定，3 個頁面或以上才用）
-
-```css
-.tab-bar {
-  position: fixed; bottom: 0;
-  left: 50%; transform: translateX(-50%);
-  width: 100%; max-width: 480px;
-  height: 60px; background: var(--white);
-  border-top: 1px solid var(--border);
-  display: flex; z-index: 100;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-.tab-bar::after {
-  content: ''; position: absolute;
-  bottom: calc(-1 * env(safe-area-inset-bottom, 0px));
-  left: 0; right: 0;
-  height: env(safe-area-inset-bottom, 0px);
-  background: var(--white);
-}
-```
-
-Tab 切換（JS）：
-
-```javascript
-const TABS = ['A', 'B', 'C']; // 換成你的 tab 名
-
-window.switchTab = function(t) {
-  TABS.forEach(x => {
-    document.getElementById('page' + x).classList.toggle('active', x === t);
-    document.getElementById('tab' + x).classList.toggle('active', x === t);
-  });
-};
-```
-
-```css
-.page { display: none; }
-.page.active { display: block; }
-```
-
-### 搜索框
-
-```css
-.search-wrap { padding: 0 0 12px; position: relative; }
-.search-input {
-  width: 100%; padding: 10px 14px 10px 36px;
-  border: 1.5px solid var(--border-strong); border-radius: 10px;
-  font-size: 14px; background: var(--bg); color: var(--text);
-  outline: none; transition: border-color 0.2s;
-}
-.search-input:focus { border-color: var(--accent); }
-.search-icon {
-  position: absolute; left: 12px; top: 0; bottom: 12px;
-  margin: auto 0; color: var(--text-light); pointer-events: none;
-}
-```
-
-只在條目超過 8–10 個時才加。放喺 sticky header 入面，用 `oninput="filterItems()"` 觸發即時過濾。
-
-### Expand / Collapse 卡片（純 CSS 動畫）
-
-```css
-.card-body {
-  max-height: 0; overflow: hidden;
-  transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1);
-}
-.card.open .card-body { max-height: 800px; }
-.expand-btn { transition: transform 0.3s; }
-.card.open .expand-btn { transform: rotate(180deg); }
-```
-
-```javascript
-window.toggleCard = function(el) {
-  el.closest('.card').classList.toggle('open');
-};
-```
-
-### Badge（狀態標籤）
-
-```css
-.badge {
-  font-size: 10px; font-weight: 600;
-  padding: 3px 8px; border-radius: 6px;
-  font-family: 'DM Mono', monospace;
-}
-.badge-green { background: var(--green-light); color: var(--green); }
-.badge-amber { background: var(--amber-light); color: var(--amber); }
-.badge-red   { background: var(--red-light);   color: var(--red); }
-.badge-blue  { background: var(--accent-light); color: var(--accent); }
-```
-
-### Filter Chips
-
-```css
-.filter-row {
-  display: flex; gap: 6px; padding-bottom: 10px;
-  overflow-x: auto; -webkit-overflow-scrolling: touch;
-}
-.chip {
-  flex-shrink: 0; padding: 6px 12px; border-radius: 99px;
-  font-size: 12px; font-weight: 600;
-  border: 1.5px solid var(--border-strong);
-  background: transparent; color: var(--text-muted);
-  cursor: pointer; transition: all 0.15s;
-}
-.chip.active { background: var(--accent); color: white; border-color: var(--accent); }
-```
-
-### Toast 通知
-
-```css
-.toast {
-  position: fixed; bottom: calc(60px + env(safe-area-inset-bottom, 0px) + 16px);
-  left: 50%; transform: translateX(-50%);
-  background: var(--white); border: 1px solid var(--border);
-  border-radius: 10px; padding: 10px 18px;
-  font-size: 12px; font-weight: 600;
-  z-index: 450; white-space: nowrap;
-  box-shadow: var(--shadow); opacity: 0;
-  transition: opacity 0.3s ease; pointer-events: none;
-}
-.toast.show { opacity: 1; }
-```
-
-```javascript
-let toastTimer = null;
-function showToast(msg, color = 'var(--green)') {
-  const t = document.getElementById('toast');
-  if (toastTimer) { clearTimeout(toastTimer); toastTimer = null; }
-  t.textContent = msg; t.style.color = color;
-  t.classList.remove('show');
-  void t.offsetWidth; // 強制 reflow，重置動畫
-  t.classList.add('show');
-  toastTimer = setTimeout(() => { t.classList.remove('show'); toastTimer = null; }, 2500);
-}
-```
-
-HTML：`<div class="toast" id="toast"></div>`
+如果 app 已經有呢啲元件，優先沿用原 pattern，而唔好發明另一套 interaction。
 
 ---
 
-## 8. 靜態數據結構
+## 15. PWA Defaults
 
-靜態數據放喺 JS `const` 入面，唔需要獨立 JSON 檔案：
+如果 app 適合放上手機主畫面，預設加：
 
-```javascript
-const DATA = [
-  {
-    id: 'unique-key',
-    name: '名稱',
-    subtitle: '副標題',
-    tags: ['tag1', 'tag2'],        // 用作 filter
-    badges: [{ t: '標籤', c: 'badge-green' }],
-    sections: [
-      {
-        label: '分類名',
-        items: [
-          { i: '✓', c: 'good', t: '內容文字' },
-          { i: '⚠', c: 'warn', t: '內容文字' },
-          { i: '—', c: '',     t: '內容文字' },
-        ]
-      }
-    ]
-  }
-];
-```
+- `manifest.json`
+- `sw.js`
+- `icon-192.png`
+
+PWA 原則：
+
+- app 名稱清楚
+- icon 簡單清晰
+- 可離線讀基本頁面
+- 更新策略簡單直接
 
 ---
 
-## 9. PWA 必要檔案
+## 16. Icon Defaults
 
-### manifest.json
+預設 icon 規則：
 
-```json
-{
-  "name": "完整 App 名稱",
-  "short_name": "主畫面名稱",
-  "description": "描述",
-  "start_url": "./",
-  "display": "standalone",
-  "background_color": "#F7F7F5",
-  "theme_color": "#1A3C5E",
-  "lang": "zh-HK",
-  "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ]
-}
-```
+- 背景色固定深藍 `#1A3C5E`
+- 文字預設用 app 名稱第一個字
+- 文字色固定白色
+- 字體固定 PingFang SC：`/System/Library/Fonts/PingFang.ttc`
+- 圓角約 20 至 22%
+- 尺寸 192 × 192
+- `purpose: "any maskable"`
 
-### sw.js（直接複製，只改 CACHE 名稱）
-
-```javascript
-const CACHE = 'app-name-v2026.01.01.0'; // 版本號同 index.html 頂部保持一致
-
-self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(['./', './index.html', './manifest.json']))
-  );
-  self.skipWaiting();
-});
-
-self.addEventListener('activate', e => {
-  e.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-    )
-  );
-  self.clients.claim();
-});
-
-self.addEventListener('fetch', e => {
-  if (e.request.mode === 'navigate') {
-    e.respondWith(
-      fetch(e.request).then(res => {
-        caches.open(CACHE).then(c => c.put(e.request, res.clone()));
-        return res;
-      }).catch(() => caches.match(e.request))
-    );
-    return;
-  }
-  e.respondWith(
-    caches.match(e.request).then(cached =>
-      cached || fetch(e.request).then(res => {
-        caches.open(CACHE).then(c => c.put(e.request, res.clone()));
-        return res;
-      })
-    )
-  );
-});
-```
+如果我冇特別講，直接按呢套做。
 
 ---
 
-## 10. 版本管理
+## 17. How AI Should Respond
 
-版本格式：`YYYY.MM.DD.序號`（同日多次更新時序號遞增，例：`2026.04.10.0`、`2026.04.10.1`）
+當我要求修改 app 或建立新 app 時，AI 應：
 
-每次更新**必須同步兩處**：
+- 優先直接實作，而唔係先講長篇方案
+- 如有明顯 tradeoff，先簡短講原因
+- 完成後用簡潔方式總結改咗咩
+- 如果偏離呢份 recipe，要明確講偏離原因
+- 如果現有 app 已經有明顯風格，優先跟返個風格
 
-1. `index.html` 頂部 comment：
-   ```html
-   <!-- VERSION: 2026.04.10.0 -->
-   ```
-
-2. `sw.js` 的 cache 名稱：
-   ```javascript
-   const CACHE = 'app-name-v2026.04.10.0';
-   ```
-
-更新 cache 名稱會觸發 Service Worker 重新安裝，用戶下次打開 app 時靜默取得新版本。
+我唔需要 generic best practices；我需要貼近我工作方式、審美同部署習慣嘅結果。
 
 ---
 
-## 11. 部署（GitHub Pages）
+## 18. Simple Heuristic
 
-1. Repo 設定 → Pages → Source 選 `main` branch，根目錄 `/`
-2. 直接 push 到 `main` → 自動 deploy（約 1–2 分鐘）
-3. 更新內容後記得同步 `sw.js` 版本號，確保用戶清除舊緩存
+可以用以下順序判斷：
 
----
+1. 先問：呢個 app 可唔可以繼續保持單頁、原生、零 build step？
+2. 如果可以，就唔好升級架構
+3. 如果資料只係本地小量保存，先用 `localStorage`
+4. 如果內容主要係展示，直接用靜態常數
+5. 如果係改舊 app，先跟舊 pattern
+6. 只有原方案明顯唔夠用，先提出更重方案
 
-## 12. 快速開始 Checklist
-
-- [ ] 根據 app 類型決定 design 方向（參考上方表格）
-- [ ] 複製 HTML 骨架，按需保留或移除 tab bar
-- [ ] 決定主題色，更新 `--accent` 及 dark mode 對應色
-- [ ] 用 Python 腳本生成 `icon-192.png`（背景固定 `#1A3C5E`，白色文字，app 名第一個字）
-- [ ] 定義靜態數據（`const DATA = [...]`）並寫 render 函數
-- [ ] 更新 `manifest.json` 名稱、描述、顏色
-- [ ] 在 `index.html` 頂部加 `<!-- VERSION: YYYY.MM.DD.0 -->`
-- [ ] 改 `sw.js` 的 `CACHE` 版本號，與 VERSION comment 一致
-- [ ] 設定 GitHub Pages（Settings → Pages → main branch）
-- [ ] Push 到 GitHub main branch，測試 PWA 安裝
+呢份 recipe 係偏好聲明。
+除非我明確要求，否則 AI 應將它視為預設做法，而唔係其中一個可選方案。
