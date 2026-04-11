@@ -146,7 +146,7 @@ print("Done: icon-192.png")
 ```css
 :root {
   --bg: #F7F7F5;
-  --white: #FFFFFF;
+  --white: #FFFFFF;        /* 卡片、header、tab bar 表面色 */
   --text: #111110;
   --text-muted: #888884;
   --text-light: #BBBBB8;
@@ -186,20 +186,21 @@ print("Done: icon-192.png")
 ```
 
 **原則：**
+- `--bg` 係頁面底色，`--white` 係卡片／header／tab bar 表面色
 - `--accent` 係唯一強調色，按鈕、連結、focus ring 全部用它
 - `--green` / `--amber` / `--red` 固定代表好 / 警告 / 壞，唔可以挪作裝飾用途
 - dark mode 只需覆蓋背景同文字系列變數，語義色保持不變
 
 ### 字型分工
 
+英文設計感 app，用 Google Fonts：
 ```css
 font-family: 'DM Serif Display', serif;   /* 大標題（優雅感） */
 font-family: 'DM Mono', monospace;        /* 數字、badge、label（精準感） */
 font-family: 'Figtree', sans-serif;       /* 正文、按鈕（body default） */
 ```
 
-如唔需要 Google Fonts，可用系統字體棧（適合純中文 app）：
-
+中文 app，用系統字體棧（無需引入外部字型）：
 ```css
 font-family: -apple-system, 'SF Pro Text', 'Helvetica Neue',
              'PingFang TC', 'Microsoft JhengHei', Arial, sans-serif;
@@ -288,6 +289,25 @@ window.switchTab = function(t) {
 .page.active { display: block; }
 ```
 
+### 搜索框
+
+```css
+.search-wrap { padding: 0 0 12px; position: relative; }
+.search-input {
+  width: 100%; padding: 10px 14px 10px 36px;
+  border: 1.5px solid var(--border-strong); border-radius: 10px;
+  font-size: 14px; background: var(--bg); color: var(--text);
+  outline: none; transition: border-color 0.2s;
+}
+.search-input:focus { border-color: var(--accent); }
+.search-icon {
+  position: absolute; left: 12px; top: 0; bottom: 12px;
+  margin: auto 0; color: var(--text-light); pointer-events: none;
+}
+```
+
+放喺 sticky header 入面，用 `oninput="filterItems()"` 觸發即時過濾。只在條目超過 8–10 個時才加。
+
 ### Expand / Collapse 卡片（純 CSS 動畫）
 
 ```css
@@ -296,6 +316,8 @@ window.switchTab = function(t) {
   transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1);
 }
 .card.open .card-body { max-height: 800px; } /* 估計最大高度 */
+.expand-btn { transition: transform 0.3s; }
+.card.open .expand-btn { transform: rotate(180deg); }
 ```
 
 ```javascript
@@ -321,10 +343,13 @@ window.toggleCard = function(el) {
 ### Filter Chips
 
 ```css
-.filter-row { display: flex; gap: 6px; padding-bottom: 10px; }
+.filter-row {
+  display: flex; gap: 6px; padding-bottom: 10px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
 .chip {
-  flex: 1; text-align: center;
-  padding: 6px 4px; border-radius: 99px;
+  flex-shrink: 0; text-align: center;
+  padding: 6px 12px; border-radius: 99px;
   font-size: 12px; font-weight: 600;
   border: 1.5px solid var(--border-strong);
   background: transparent; color: var(--text-muted);
@@ -332,6 +357,37 @@ window.toggleCard = function(el) {
 }
 .chip.active { background: var(--accent); color: white; border-color: var(--accent); }
 ```
+
+### Toast 通知
+
+```css
+.toast {
+  position: fixed; bottom: calc(60px + env(safe-area-inset-bottom, 0px) + 16px);
+  left: 50%; transform: translateX(-50%);
+  background: var(--white); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 18px;
+  font-size: 12px; font-weight: 600;
+  z-index: 450; white-space: nowrap;
+  box-shadow: var(--shadow); opacity: 0;
+  transition: opacity 0.3s ease; pointer-events: none;
+}
+.toast.show { opacity: 1; }
+```
+
+```javascript
+let toastTimer = null;
+function showToast(msg, color = 'var(--green)') {
+  const t = document.getElementById('toast');
+  if (toastTimer) { clearTimeout(toastTimer); toastTimer = null; }
+  t.textContent = msg; t.style.color = color;
+  t.classList.remove('show');
+  void t.offsetWidth; // 強制 reflow，重置動畫
+  t.classList.add('show');
+  toastTimer = setTimeout(() => { t.classList.remove('show'); toastTimer = null; }, 2500);
+}
+```
+
+HTML：`<div class="toast" id="toast"></div>`
 
 ---
 
@@ -470,6 +526,7 @@ self.addEventListener('fetch', e => {
 - [ ] 用 Python 腳本生成 `icon-192.png`（背景固定 `#1A3C5E`，白色文字，app 名第一個字）
 - [ ] 定義靜態數據（`const DATA = [...]`）並寫 render 函數
 - [ ] 更新 `manifest.json` 名稱、描述、顏色
-- [ ] 改 `sw.js` 的 `CACHE` 版本號，與 `index.html` 頂部 comment 一致
+- [ ] 在 `index.html` 頂部加 `<!-- VERSION: YYYY.MM.DD.0 -->`
+- [ ] 改 `sw.js` 的 `CACHE` 版本號，與 VERSION comment 一致
 - [ ] 設定 GitHub Pages（Settings → Pages → main branch）
 - [ ] Push 到 GitHub main branch，測試 PWA 安裝
