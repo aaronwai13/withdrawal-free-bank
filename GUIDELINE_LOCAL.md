@@ -381,6 +381,23 @@ PWA 原則：
 
 預設提供 custom PWA icon。
 
+如果要做正式 icon，預設保留以下資產：
+
+- `icon.svg`
+- `icon-192.png`
+- `apple-touch-icon.png`
+
+三者用途分工如下：
+
+- `icon.svg`
+  向量原稿，方便之後改字、改色、放大縮細
+- `icon-192.png`
+  畀 `manifest.json` / PWA / Android 用嘅基本 icon
+- `apple-touch-icon.png`
+  畀 iPhone / iPad「加到主畫面」時使用
+
+唔好假設只留一個檔案就可以覆蓋所有情況。
+
 如果要做 icon，預設用以下方向：
 
 - 白色背景
