@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>境外撳錢免費指南</title>
-<link rel="apple-touch-icon" href="./icon-192.png">
 <meta name="theme-color" content="#F7F7F5" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#111112" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="./manifest.json">
@@ -293,18 +292,7 @@
         <div class="compare-scroll">
           <table class="compare-table">
             <thead><tr><th>銀行</th><th>外幣費</th><th>次數</th></tr></thead>
-            <tbody>
-              <tr><td><b>興業銀行</b></td><td class="cell-good">免</td><td class="cell-warn">3筆/月</td></tr>
-              <tr><td><b>上海銀行</b></td><td class="cell-good">免</td><td class="cell-good">無限</td></tr>
-              <tr><td><b>長沙銀行</b></td><td class="cell-good">免</td><td class="cell-good">無限</td></tr>
-              <tr><td><b>中信萬事達</b></td><td class="cell-good">免</td><td class="cell-warn">3筆/月</td></tr>
-              <tr><td><b>Wise</b></td><td class="cell-good">免</td><td class="cell-warn">2筆/月</td></tr>
-              <tr><td><b>中銀扣賬卡</b></td><td class="cell-good">免</td><td class="cell-good">無限</td></tr>
-              <tr><td><b>匯豐扣賬卡</b></td><td class="cell-good">免</td><td class="cell-good">無限</td></tr>
-              <tr><td><b>恒生扣賬卡</b></td><td class="cell-good">免</td><td class="cell-good">無限</td></tr>
-              <tr><td><b>東亞扣賬卡</b></td><td class="cell-bad">1.95%</td><td class="cell-good">無限</td></tr>
-              <tr><td><b>信銀扣賬卡</b></td><td class="cell-bad">1.95%</td><td class="cell-good">無限</td></tr>
-            </tbody>
+            <tbody id="compareTableBody"></tbody>
           </table>
         </div>
       </div>
@@ -370,6 +358,7 @@ const BANKS = [
   {
     id:'xinye', name:'興業銀行', subtitle:'大陸銀行',
     tags:['mainland'],
+    compare:{fx:'免', fxClass:'cell-good', count:'3筆/月', countClass:'cell-warn'},
     badges:[{t:'3筆/月',c:'badge-amber'}],
     sections:[
       {label:'特點',items:[
@@ -387,6 +376,7 @@ const BANKS = [
   {
     id:'shanghai', name:'上海銀行', subtitle:'大陸銀行',
     tags:['unlimited','mainland'],
+    compare:{fx:'免', fxClass:'cell-good', count:'無限', countClass:'cell-good'},
     badges:[{t:'無限次',c:'badge-green'}],
     sections:[
       {label:'特點',items:[
@@ -404,6 +394,7 @@ const BANKS = [
   {
     id:'changsha', name:'長沙銀行', subtitle:'大陸銀行',
     tags:['unlimited','mainland'],
+    compare:{fx:'免', fxClass:'cell-good', count:'無限', countClass:'cell-good'},
     badges:[{t:'無限次',c:'badge-green'}],
     sections:[
       {label:'特點',items:[
@@ -421,6 +412,7 @@ const BANKS = [
   {
     id:'citic', name:'中信萬事達', subtitle:'大陸銀行',
     tags:['mainland'],
+    compare:{fx:'免', fxClass:'cell-good', count:'3筆/月', countClass:'cell-warn'},
     badges:[{t:'3筆/月',c:'badge-amber'}],
     sections:[
       {label:'特點',items:[
@@ -435,6 +427,7 @@ const BANKS = [
   {
     id:'wise', name:'Wise', subtitle:'數字匯款平台',
     tags:['digital'],
+    compare:{fx:'免', fxClass:'cell-good', count:'2筆/月', countClass:'cell-warn'},
     badges:[{t:'2筆/月免費',c:'badge-amber'},{t:'多幣兌換',c:'badge-blue'}],
     sections:[
       {label:'特點',items:[
@@ -457,6 +450,7 @@ const BANKS = [
   {
     id:'boc', name:'中銀扣賬卡', subtitle:'香港銀行 · 中國銀行（香港）',
     tags:['unlimited','hk'],
+    compare:{fx:'免', fxClass:'cell-good', count:'無限', countClass:'cell-good'},
     badges:[{t:'全球單免',c:'badge-green'},{t:'泰國全免',c:'badge-green'}],
     sections:[
       {label:'特點',items:[
@@ -473,6 +467,7 @@ const BANKS = [
   {
     id:'hsbc', name:'匯豐扣賬卡', subtitle:'香港銀行 · 匯豐',
     tags:['unlimited','hk'],
+    compare:{fx:'免', fxClass:'cell-good', count:'無限', countClass:'cell-good'},
     badges:[{t:'無限次',c:'badge-green'},{t:'全球匯豐免',c:'badge-green'},{t:'非匯豐收費',c:'badge-amber'}],
     sections:[
       {label:'特點',items:[
@@ -492,6 +487,7 @@ const BANKS = [
   {
     id:'hangseng', name:'恒生扣賬卡', subtitle:'香港銀行 · 恒生',
     tags:['unlimited','hk'],
+    compare:{fx:'免', fxClass:'cell-good', count:'無限', countClass:'cell-good'},
     badges:[{t:'無限次',c:'badge-green'},{t:'全球匯豐免',c:'badge-green'},{t:'非匯豐收費',c:'badge-amber'}],
     sections:[
       {label:'特點',items:[
@@ -511,6 +507,7 @@ const BANKS = [
   {
     id:'bea', name:'東亞扣賬卡', subtitle:'香港銀行 · 東亞',
     tags:['unlimited','hk'],
+    compare:{fx:'1.95%', fxClass:'cell-bad', count:'無限', countClass:'cell-good'},
     badges:[{t:'無限次',c:'badge-green'},{t:'全球單免',c:'badge-green'},{t:'非支援外幣1.95%',c:'badge-red'}],
     sections:[
       {label:'特點',items:[
@@ -526,6 +523,7 @@ const BANKS = [
   {
     id:'chiyu', name:'信銀扣賬卡', subtitle:'香港銀行 · 信銀',
     tags:['unlimited','hk'],
+    compare:{fx:'1.95%', fxClass:'cell-bad', count:'無限', countClass:'cell-good'},
     badges:[{t:'無限次',c:'badge-green'},{t:'全球單免',c:'badge-green'},{t:'非支援外幣1.95%',c:'badge-red'}],
     sections:[
       {label:'特點',items:[
@@ -557,10 +555,10 @@ function renderBanks(){
   const filtered=BANKS.filter(b=>{
     if(curFilter!=='all'&&!b.tags.includes(curFilter))return false;
     if(curSearch){
-      const regionItems=b.sections
-        .filter(s=>s.label==='支援地區 / ATM 網絡'||s.label==='特點')
-        .map(s=>s.items.map(i=>i.t).join(' ')).join(' ');
-      const hay=(b.name+' '+b.subtitle+' '+regionItems).toLowerCase();
+      const sectionText=b.sections.map(s=>s.items.map(i=>i.t).join(' ')).join(' ');
+      const badgeText=b.badges.map(x=>x.t).join(' ');
+      const compareText=b.compare ? `${b.compare.fx} ${b.compare.count}` : '';
+      const hay=(b.name+' '+b.subtitle+' '+sectionText+' '+badgeText+' '+compareText).toLowerCase();
       if(!hay.includes(curSearch))return false;
     }
     return true;
@@ -595,6 +593,18 @@ function renderBanks(){
     </div>`;
   }).join('');
 }
+function renderCompareTable(){
+  const tableBody=document.getElementById('compareTableBody');
+  tableBody.innerHTML=BANKS
+    .filter(b=>b.compare)
+    .map(b=>`
+      <tr>
+        <td><b>${b.name}</b></td>
+        <td class="${b.compare.fxClass}">${b.compare.fx}</td>
+        <td class="${b.compare.countClass}">${b.compare.count}</td>
+      </tr>
+    `).join('');
+}
 function toggle(id){
   openSet.has(id)?openSet.delete(id):openSet.add(id);
   const c=document.getElementById('card-'+id);
@@ -610,6 +620,7 @@ function switchTab(tab){
   document.getElementById('filterRow').style.display=show?'':'none';
 }
 renderBanks();
+renderCompareTable();
 </script>
 <script>
 if('serviceWorker' in navigator){
