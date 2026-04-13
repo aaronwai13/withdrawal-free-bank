@@ -1,8 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
-  <title id="title">撳錢指南 icon</title>
-  <desc id="desc">Rounded-square icon with a #1F5A4A background and the Chinese character 撳 centered in white.</desc>
-  <rect x="24" y="24" width="464" height="464" rx="108" fill="#1F5A4A"/>
-  <text x="50%" y="50%" text-anchor="middle" dominant-baseline="central"
-    font-family="-apple-system, SF Pro Display, SF Pro Text, PingFang HK, PingFang TC, Heiti TC, sans-serif"
-    font-size="280" font-weight="700" fill="#FFFFFF">撳</text>
-</svg>
