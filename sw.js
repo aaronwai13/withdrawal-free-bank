@@ -1,4 +1,4 @@
-const CACHE = 'atm-guide-v2';
+const CACHE = 'atm-guide-v2026.04.14.12';
 
 self.addEventListener('install', e => {
   e.waitUntil(
