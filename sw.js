@@ -1,4 +1,4 @@
-const CACHE = 'atm-guide-v2026.04.14.13';
+const CACHE = 'atm-guide-v2026.04.23.1';
 const APP_SHELL = './index.html';
 
 self.addEventListener('install', e => {
@@ -9,7 +9,17 @@ self.addEventListener('install', e => {
       './manifest.json?v=2026.04.14.13',
       './icon-192-v2026.04.14.13.png',
       './apple-touch-icon-v2026.04.14.13.png',
-      './icon-v2026.04.14.13.svg'
+      './icon-v2026.04.14.13.svg',
+      './logos/xinye.svg',
+      './logos/shanghai.svg',
+      './logos/changsha.svg',
+      './logos/citic.svg',
+      './logos/wise-mark.svg',
+      './logos/boc.svg',
+      './logos/hsbc-symbol.svg',
+      './logos/hangseng-symbol.svg',
+      './logos/bea.svg',
+      './logos/cncb.png'
     ]))
   );
   self.skipWaiting();
@@ -40,10 +50,13 @@ self.addEventListener('fetch', e => {
   }
   // 其他資源：緩存優先
   e.respondWith(
-    caches.match(e.request).then(cached => cached || fetch(e.request).then(res => {
-      const clone = res.clone();
-      caches.open(CACHE).then(c => c.put(e.request, clone));
-      return res;
-    }))
+    caches.match(e.request).then(cached => {
+      if (cached) return cached;
+      return fetch(e.request).then(res => {
+        const clone = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, clone));
+        return res;
+      }).catch(() => Response.error());
+    })
   );
 });

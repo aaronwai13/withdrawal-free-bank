@@ -158,11 +158,16 @@
   }
   .bank-name-row { display: flex; align-items: center; gap: 10px; }
   .bank-avatar {
-    width: 38px; height: 38px; border-radius: 10px;
+    width: 40px; height: 40px; border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0; overflow: hidden;
+    padding: 4px;
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.04);
   }
-  .bank-avatar svg { width: 20px; height: 20px; }
+  .bank-avatar img,
+  .bank-avatar svg { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .bank-avatar img.zoom { transform: scale(1.16); transform-origin: center; }
   .bank-name { font-size: 15px; font-weight: 600; line-height: 1.2; }
   .bank-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
   .bank-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
@@ -344,16 +349,16 @@
 
 <script>
 const LOGOS = {
-  xinye:    {icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/></svg>`, bg:'#E8EFF5', color:'#1A3C5E'},
-  shanghai: {icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/></svg>`, bg:'#E8EFF5', color:'#1A3C5E'},
-  changsha: {icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M3 10h18M5 6l7-3 7 3M4 10v11M20 10v11M8 14v3M12 14v3M16 14v3"/></svg>`, bg:'#E8EFF5', color:'#1A3C5E'},
-  citic:    {icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="6" y1="15" x2="10" y2="15"/></svg>`, bg:'#E8EFF5', color:'#1A3C5E'},
-  wise:     {icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 16V4m0 0L3 8m4-4l4 4M17 8v12m0 0l4-4m-4 4l-4-4"/></svg>`, bg:'#E8EFF5', color:'#1A3C5E'},
-  boc:      {icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="6" y1="15" x2="10" y2="15"/></svg>`, bg:'#E8EFF5', color:'#1A3C5E'},
-  hsbc:     {icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="6" y1="15" x2="10" y2="15"/></svg>`, bg:'#E8EFF5', color:'#1A3C5E'},
-  hangseng: {icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="6" y1="15" x2="10" y2="15"/></svg>`, bg:'#E8EFF5', color:'#1A3C5E'},
-  bea:      {icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="6" y1="15" x2="10" y2="15"/></svg>`, bg:'#E8EFF5', color:'#1A3C5E'},
-  chiyu:    {icon:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="6" y1="15" x2="10" y2="15"/></svg>`, bg:'#E8EFF5', color:'#1A3C5E'},
+  xinye:    {icon:`<img src="./logos/xinye.svg" alt="興業銀行 logo">`, bg:'#FFFFFF', color:'#1A3C5E'},
+  shanghai: {icon:`<img src="./logos/shanghai.svg" alt="上海銀行 logo">`, bg:'#FFFFFF', color:'#C8102E'},
+  changsha: {icon:`<img src="./logos/changsha.svg" alt="長沙銀行 logo">`, bg:'#FFFFFF', color:'#1560A8'},
+  citic:    {icon:`<img src="./logos/citic.svg" alt="中信銀行 logo">`, bg:'#FFFFFF', color:'#D7000F'},
+  wise:     {icon:`<img class="zoom" src="./logos/wise-mark.svg" alt="Wise logo">`, bg:'#163300', color:'#9FE870'},
+  boc:      {icon:`<img src="./logos/boc.svg" alt="中銀香港 logo">`, bg:'#FFFFFF', color:'#C8102E'},
+  hsbc:     {icon:`<img src="./logos/hsbc-symbol.svg" alt="HSBC logo">`, bg:'#FFFFFF', color:'#DB0011'},
+  hangseng: {icon:`<img src="./logos/hangseng-symbol.svg" alt="恒生銀行 logo">`, bg:'#FFFFFF', color:'#B8860B'},
+  bea:      {icon:`<img src="./logos/bea.svg" alt="東亞銀行 logo">`, bg:'#FFFFFF', color:'#C8102E'},
+  chiyu:    {icon:`<img class="zoom" src="./logos/cncb.png" alt="信銀國際 logo">`, bg:'#FFFFFF', color:'#D7000F'},
 };
 
 const BANKS = [
@@ -629,6 +634,8 @@ if('serviceWorker' in navigator){
   let refreshing = false;
   navigator.serviceWorker.register('./sw.js').then(reg => {
     reg.update();
+  }).catch(() => {
+    // file:// or unsupported contexts can fail registration during local preview.
   });
   navigator.serviceWorker.addEventListener('controllerchange', () => {
     if(refreshing) return;
