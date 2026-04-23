@@ -1,4 +1,4 @@
-const CACHE = 'atm-guide-v2026.04.23.1';
+const CACHE = 'atm-guide-v2026.04.23.2';
 const APP_SHELL = './index.html';
 
 self.addEventListener('install', e => {
@@ -6,7 +6,7 @@ self.addEventListener('install', e => {
     caches.open(CACHE).then(c => c.addAll([
       './',
       APP_SHELL,
-      './manifest.json?v=2026.04.14.13',
+      './manifest.json?v=2026.04.23.2',
       './icon-192-v2026.04.14.13.png',
       './apple-touch-icon-v2026.04.14.13.png',
       './icon-v2026.04.14.13.svg',
