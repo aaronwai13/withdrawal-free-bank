@@ -626,18 +626,13 @@ renderCompareTable();
 </script>
 <script>
 if('serviceWorker' in navigator){
+  let refreshing = false;
   navigator.serviceWorker.register('./sw.js').then(reg => {
     reg.update();
-    reg.addEventListener('updatefound', () => {
-      const newWorker = reg.installing;
-      newWorker.addEventListener('statechange', () => {
-        if(newWorker.state === 'installed' && navigator.serviceWorker.controller){
-          window.location.reload();
-        }
-      });
-    });
   });
   navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if(refreshing) return;
+    refreshing = true;
     window.location.reload();
   });
 }

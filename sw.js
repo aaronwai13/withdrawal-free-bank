@@ -1,10 +1,11 @@
 const CACHE = 'atm-guide-v2026.04.14.13';
+const APP_SHELL = './index.html';
 
 self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE).then(c => c.addAll([
       './',
-      './index.html',
+      APP_SHELL,
       './manifest.json?v=2026.04.14.13',
       './icon-192-v2026.04.14.13.png',
       './apple-touch-icon-v2026.04.14.13.png',
@@ -31,7 +32,9 @@ self.addEventListener('fetch', e => {
         const clone = res.clone();
         caches.open(CACHE).then(c => c.put(e.request, clone));
         return res;
-      }).catch(() => caches.match(e.request))
+      }).catch(async () => {
+        return (await caches.match(e.request)) || caches.match(APP_SHELL);
+      })
     );
     return;
   }
