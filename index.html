@@ -6,7 +6,7 @@
 <title>撳錢指南</title>
 <meta name="theme-color" content="#F7F7F5" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#111112" media="(prefers-color-scheme: dark)">
-<link rel="manifest" href="./manifest.json?v=2026.04.23.2">
+<link rel="manifest" href="./manifest.json?v=2026.04.28.1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="撳錢指南">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -99,6 +99,13 @@
     padding-bottom: 10px;
   }
   .filter-row::-webkit-scrollbar { display: none; }
+  .destination-row {
+    display: flex; gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 12px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .destination-row::-webkit-scrollbar { display: none; }
   .chip {
     flex: 1; text-align: center; padding: 6px 4px; border-radius: 99px;
     font-size: 12px; font-weight: 600;
@@ -107,6 +114,7 @@
     cursor: pointer; font-family: 'Figtree', sans-serif;
     white-space: nowrap; transition: all 0.15s;
   }
+  .destination-row .chip { flex: 0 0 auto; padding: 6px 12px; }
   .chip.active { background: var(--accent); color: white; border-color: var(--accent); }
 
   /* TAB BAR */
@@ -269,7 +277,7 @@
     <div class="header-top">
       <div>
         <div class="header-title">境外撳錢<br>免費指南</div>
-        <div class="header-sub">ATM / 免手續費查詢 · v2026.04.23.2</div>
+        <div class="header-sub">ATM / 免手續費查詢 · v2026.04.28.1</div>
       </div>
 
     </div>
@@ -285,6 +293,18 @@
       <button class="chip" onclick="setFilter('hk',this)">香港銀行</button>
       <button class="chip" onclick="setFilter('mainland',this)">內地銀行</button>
       <button class="chip" onclick="setFilter('digital',this)">數字平台</button>
+    </div>
+    <div class="destination-row" id="destinationRow">
+      <button class="chip active" onclick="setDestination('all',this)">全部地區</button>
+      <button class="chip" onclick="setDestination('japan',this)">日本</button>
+      <button class="chip" onclick="setDestination('thailand',this)">泰國</button>
+      <button class="chip" onclick="setDestination('taiwan',this)">台灣</button>
+      <button class="chip" onclick="setDestination('korea',this)">韓國</button>
+      <button class="chip" onclick="setDestination('singapore',this)">新加坡</button>
+      <button class="chip" onclick="setDestination('malaysia',this)">馬來西亞</button>
+      <button class="chip" onclick="setDestination('indonesia',this)">印尼</button>
+      <button class="chip" onclick="setDestination('vietnam',this)">越南</button>
+      <button class="chip" onclick="setDestination('macau',this)">澳門</button>
     </div>
   </div>
 
@@ -365,6 +385,7 @@ const BANKS = [
   {
     id:'xinye', name:'興業銀行', subtitle:'大陸銀行',
     tags:['mainland'],
+    destinations:['korea','thailand','hk','taiwan','vietnam','singapore','malaysia','indonesia','dubai','georgia'],
     compare:{fx:'免', fxClass:'cell-good', count:'3筆/月', countClass:'cell-warn'},
     badges:[{t:'3筆/月',c:'badge-amber'}],
     sections:[
@@ -383,6 +404,7 @@ const BANKS = [
   {
     id:'shanghai', name:'上海銀行', subtitle:'大陸銀行',
     tags:['unlimited','mainland'],
+    destinations:['korea','thailand','hk','taiwan','vietnam','singapore','malaysia','indonesia','dubai','georgia'],
     compare:{fx:'免', fxClass:'cell-good', count:'無限', countClass:'cell-good'},
     badges:[{t:'無限次',c:'badge-green'}],
     sections:[
@@ -401,6 +423,7 @@ const BANKS = [
   {
     id:'changsha', name:'長沙銀行', subtitle:'大陸銀行',
     tags:['unlimited','mainland'],
+    destinations:['korea','thailand','hk','taiwan','vietnam','singapore','malaysia','indonesia','dubai','georgia'],
     compare:{fx:'免', fxClass:'cell-good', count:'無限', countClass:'cell-good'},
     badges:[{t:'無限次',c:'badge-green'}],
     sections:[
@@ -419,6 +442,7 @@ const BANKS = [
   {
     id:'citic', name:'中信萬事達', subtitle:'大陸銀行',
     tags:['mainland'],
+    destinations:['japan'],
     compare:{fx:'免', fxClass:'cell-good', count:'3筆/月', countClass:'cell-warn'},
     badges:[{t:'3筆/月',c:'badge-amber'}],
     sections:[
@@ -434,6 +458,7 @@ const BANKS = [
   {
     id:'wise', name:'Wise', subtitle:'數字匯款平台',
     tags:['digital'],
+    destinations:['japan','taiwan','vietnam','singapore','malaysia','indonesia','georgia'],
     compare:{fx:'免', fxClass:'cell-good', count:'2筆/月', countClass:'cell-warn'},
     badges:[{t:'2筆/月免費',c:'badge-amber'},{t:'多幣兌換',c:'badge-blue'}],
     sections:[
@@ -457,6 +482,7 @@ const BANKS = [
   {
     id:'boc', name:'中銀扣賬卡', subtitle:'香港銀行 · 中國銀行（香港）',
     tags:['unlimited','hk'],
+    destinations:['global','thailand','japan'],
     compare:{fx:'免', fxClass:'cell-good', count:'無限', countClass:'cell-good'},
     badges:[{t:'全球單免',c:'badge-green'},{t:'泰國全免',c:'badge-green'}],
     sections:[
@@ -474,6 +500,7 @@ const BANKS = [
   {
     id:'hsbc', name:'匯豐扣賬卡', subtitle:'香港銀行 · 匯豐',
     tags:['unlimited','hk'],
+    destinations:['global','macau'],
     compare:{fx:'免', fxClass:'cell-good', count:'無限', countClass:'cell-good'},
     badges:[{t:'無限次',c:'badge-green'},{t:'全球匯豐免',c:'badge-green'},{t:'非匯豐收費',c:'badge-amber'}],
     sections:[
@@ -494,6 +521,7 @@ const BANKS = [
   {
     id:'hangseng', name:'恒生扣賬卡', subtitle:'香港銀行 · 恒生',
     tags:['unlimited','hk'],
+    destinations:['global','macau'],
     compare:{fx:'免', fxClass:'cell-good', count:'無限', countClass:'cell-good'},
     badges:[{t:'無限次',c:'badge-green'},{t:'全球匯豐免',c:'badge-green'},{t:'非匯豐收費',c:'badge-amber'}],
     sections:[
@@ -514,6 +542,7 @@ const BANKS = [
   {
     id:'bea', name:'東亞扣賬卡', subtitle:'香港銀行 · 東亞',
     tags:['unlimited','hk'],
+    destinations:['global','japan'],
     compare:{fx:'1.95%', fxClass:'cell-bad', count:'無限', countClass:'cell-good'},
     badges:[{t:'無限次',c:'badge-green'},{t:'全球單免',c:'badge-green'},{t:'非支援外幣1.95%',c:'badge-red'}],
     sections:[
@@ -530,6 +559,7 @@ const BANKS = [
   {
     id:'chiyu', name:'信銀扣賬卡', subtitle:'香港銀行 · 信銀',
     tags:['unlimited','hk'],
+    destinations:['global','japan'],
     compare:{fx:'1.95%', fxClass:'cell-bad', count:'無限', countClass:'cell-good'},
     badges:[{t:'無限次',c:'badge-green'},{t:'全球單免',c:'badge-green'},{t:'非支援外幣1.95%',c:'badge-red'}],
     sections:[
@@ -545,11 +575,17 @@ const BANKS = [
   },
 ];
 
-let curFilter='all', curSearch='', openSet=new Set();
+let curFilter='all', curDestination='all', curSearch='', openSet=new Set();
 
 function setFilter(f,el){
   curFilter=f;
-  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  document.querySelectorAll('#filterRow .chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderBanks();
+}
+function setDestination(d,el){
+  curDestination=d;
+  document.querySelectorAll('#destinationRow .chip').forEach(c=>c.classList.remove('active'));
   el.classList.add('active');
   renderBanks();
 }
@@ -561,6 +597,10 @@ function renderBanks(){
   const list=document.getElementById('banksList');
   const filtered=BANKS.filter(b=>{
     if(curFilter!=='all'&&!b.tags.includes(curFilter))return false;
+    if(curDestination!=='all'){
+      const destinations=b.destinations || [];
+      if(!destinations.includes(curDestination)&&!destinations.includes('global'))return false;
+    }
     if(curSearch){
       const sectionText=b.sections.map(s=>s.items.map(i=>i.t).join(' ')).join(' ');
       const badgeText=b.badges.map(x=>x.t).join(' ');
@@ -625,6 +665,7 @@ function switchTab(tab){
   const show=tab==='Cards';
   document.getElementById('searchWrap').style.display=show?'':'none';
   document.getElementById('filterRow').style.display=show?'':'none';
+  document.getElementById('destinationRow').style.display=show?'':'none';
 }
 renderBanks();
 renderCompareTable();
@@ -632,7 +673,7 @@ renderCompareTable();
 <script>
 if('serviceWorker' in navigator){
   let refreshing = false;
-  navigator.serviceWorker.register('./sw.js').then(reg => {
+  navigator.serviceWorker.register('./sw.js?v=2026.04.28.1').then(reg => {
     reg.update();
   }).catch(() => {
     // file:// or unsupported contexts can fail registration during local preview.
