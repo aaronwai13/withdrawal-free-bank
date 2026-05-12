@@ -6,7 +6,7 @@
 <title>撳錢指南</title>
 <meta name="theme-color" content="#F7F7F5" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#111112" media="(prefers-color-scheme: dark)">
-<link rel="manifest" href="./manifest.json?v=2026.04.28.1">
+<link rel="manifest" href="./manifest.json?v=2026.05.12.2">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="撳錢指南">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -277,7 +277,7 @@
     <div class="header-top">
       <div>
         <div class="header-title">境外撳錢<br>免費指南</div>
-        <div class="header-sub">ATM / 免手續費查詢 · v2026.04.28.1</div>
+        <div class="header-sub">ATM / 免手續費查詢 · v2026.05.12.2</div>
       </div>
 
     </div>
@@ -285,7 +285,7 @@
       <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
         <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
       </svg>
-      <input class="search-input" id="searchInput" placeholder="搜尋銀行或地區…" oninput="filterBanks()">
+      <input class="search-input" id="searchInput" placeholder="搜尋銀行、卡或 ATM 網絡…" oninput="filterBanks()">
     </div>
     <div class="filter-row" id="filterRow">
       <button class="chip active" onclick="setFilter('all',this)">全部</button>
@@ -482,7 +482,7 @@ const BANKS = [
   {
     id:'boc', name:'中銀扣賬卡', subtitle:'香港銀行 · 中國銀行（香港）',
     tags:['unlimited','hk'],
-    destinations:['global','thailand','japan'],
+    destinations:['thailand','japan'],
     compare:{fx:'免', fxClass:'cell-good', count:'無限', countClass:'cell-good'},
     badges:[{t:'全球單免',c:'badge-green'},{t:'泰國全免',c:'badge-green'}],
     sections:[
@@ -492,26 +492,28 @@ const BANKS = [
         {i:'✓',c:'good',t:'日本 7-Bank ATM 免費'},
         {i:'✓',c:'good',t:'免外幣手續費'},
       ]},
-      {label:'支援貨幣',items:[
-        {i:'—',c:'',t:'港元、美元、人民幣、英鎊、日圓、澳元、新加坡元、歐元、加元、瑞士法郎、紐西蘭元及泰銖'},
+      {label:'免費提款地區 / ATM 網絡',items:[
+        {i:'✓',c:'good',t:'泰國（中銀 ATM）'},
+        {i:'✓',c:'good',t:'日本（7 Bank ATM）'},
+        {i:'⚠',c:'warn',t:'其他地區只免銀行提款手續費；ATM 機器費另計'},
       ]},
     ],
   },
   {
     id:'hsbc', name:'滙豐扣賬卡', subtitle:'香港銀行 · 滙豐',
     tags:['unlimited','hk'],
-    destinations:['global','macau'],
+    destinations:['macau'],
     compare:{fx:'免', fxClass:'cell-good', count:'無限', countClass:'cell-good'},
     badges:[{t:'無限次',c:'badge-green'},{t:'全球滙豐免',c:'badge-green'},{t:'非滙豐收費',c:'badge-amber'}],
     sections:[
       {label:'特點',items:[
-        {i:'✓',c:'good',t:'澳門用呢張先免'},
         {i:'✓',c:'good',t:'全球滙豐 ATM 全免'},
         {i:'⚠',c:'warn',t:'非滙豐 ATM 每筆收 40 港幣 + ATM 費用'},
         {i:'✓',c:'good',t:'免外幣手續費'},
       ]},
-      {label:'支援貨幣',items:[
-        {i:'—',c:'',t:'澳元、加元、瑞士法郎、歐元、英鎊、港元、日元、新西蘭元、人民幣、新加坡元、美元及泰銖'},
+      {label:'免費提款地區 / ATM 網絡',items:[
+        {i:'✓',c:'good',t:'澳門（滙豐 ATM）'},
+        {i:'⚠',c:'warn',t:'其他地區要先確認有滙豐 ATM；非滙豐 ATM 會收費'},
       ]},
       {label:'備註',items:[
         {i:'⚠',c:'warn',t:'出行前確認目的地有無滙豐 ATM'},
@@ -521,18 +523,18 @@ const BANKS = [
   {
     id:'hangseng', name:'恒生扣賬卡', subtitle:'香港銀行 · 恒生',
     tags:['unlimited','hk'],
-    destinations:['global','macau'],
+    destinations:['macau'],
     compare:{fx:'免', fxClass:'cell-good', count:'無限', countClass:'cell-good'},
     badges:[{t:'無限次',c:'badge-green'},{t:'全球滙豐免',c:'badge-green'},{t:'非滙豐收費',c:'badge-amber'}],
     sections:[
       {label:'特點',items:[
-        {i:'✓',c:'good',t:'澳門用呢張先免'},
         {i:'✓',c:'good',t:'全球滙豐 ATM 全免'},
         {i:'⚠',c:'warn',t:'非滙豐 ATM 每筆收 40 港幣 + ATM 費用'},
         {i:'✓',c:'good',t:'免外幣手續費'},
       ]},
-      {label:'支援貨幣',items:[
-        {i:'—',c:'',t:'澳元、加拿大元、瑞士法郎、歐元、英鎊、港幣、日圓、紐西蘭元、人民幣、泰銖、美元和南非蘭特'},
+      {label:'免費提款地區 / ATM 網絡',items:[
+        {i:'✓',c:'good',t:'澳門（滙豐 ATM）'},
+        {i:'⚠',c:'warn',t:'其他地區要先確認有滙豐 ATM；非滙豐 ATM 會收費'},
       ]},
       {label:'備註',items:[
         {i:'⚠',c:'warn',t:'出行前確認目的地有無滙豐 ATM'},
@@ -542,7 +544,7 @@ const BANKS = [
   {
     id:'bea', name:'東亞扣賬卡', subtitle:'香港銀行 · 東亞',
     tags:['unlimited','hk'],
-    destinations:['global','japan'],
+    destinations:['japan'],
     compare:{fx:'1.95%', fxClass:'cell-bad', count:'無限', countClass:'cell-good'},
     badges:[{t:'無限次',c:'badge-green'},{t:'全球單免',c:'badge-green'},{t:'非支援外幣1.95%',c:'badge-red'}],
     sections:[
@@ -551,15 +553,16 @@ const BANKS = [
         {i:'✗',c:'bad',t:'非支援外幣收 1.95% 手續費'},
         {i:'✓',c:'good',t:'日本 7-Bank ATM 免費'},
       ]},
-      {label:'支援貨幣',items:[
-        {i:'—',c:'',t:'澳元、加拿大元、瑞士法郎、歐元、英鎊、港元、日元、紐西蘭元、新加坡元及美元'},
+      {label:'免費提款地區 / ATM 網絡',items:[
+        {i:'✓',c:'good',t:'日本（7 Bank ATM）'},
+        {i:'⚠',c:'warn',t:'其他地區只免銀行提款手續費；ATM 機器費另計'},
       ]},
     ],
   },
   {
     id:'chiyu', name:'信銀扣賬卡', subtitle:'香港銀行 · 信銀',
     tags:['unlimited','hk'],
-    destinations:['global','japan'],
+    destinations:['japan'],
     compare:{fx:'1.95%', fxClass:'cell-bad', count:'無限', countClass:'cell-good'},
     badges:[{t:'無限次',c:'badge-green'},{t:'全球單免',c:'badge-green'},{t:'非支援外幣1.95%',c:'badge-red'}],
     sections:[
@@ -568,8 +571,9 @@ const BANKS = [
         {i:'✗',c:'bad',t:'非支援外幣收 1.95% 手續費'},
         {i:'✓',c:'good',t:'日本 7-Bank ATM 免費'},
       ]},
-      {label:'支援貨幣',items:[
-        {i:'—',c:'',t:'港元、人民幣、澳門元、加元、歐羅、日圓、紐元、英鎊、新加坡元及美元'},
+      {label:'免費提款地區 / ATM 網絡',items:[
+        {i:'✓',c:'good',t:'日本（7 Bank ATM）'},
+        {i:'⚠',c:'warn',t:'其他地區只免銀行提款手續費；ATM 機器費另計'},
       ]},
     ],
   },
@@ -599,7 +603,7 @@ function renderBanks(){
     if(curFilter!=='all'&&!b.tags.includes(curFilter))return false;
     if(curDestination!=='all'){
       const destinations=b.destinations || [];
-      if(!destinations.includes(curDestination)&&!destinations.includes('global'))return false;
+      if(!destinations.includes(curDestination))return false;
     }
     if(curSearch){
       const sectionText=b.sections.map(s=>s.items.map(i=>i.t).join(' ')).join(' ');
@@ -611,7 +615,7 @@ function renderBanks(){
     return true;
   });
   if(!filtered.length){
-    list.innerHTML='<div class="empty-state">🔍<br><br>搵唔到相關銀行</div>';
+    list.innerHTML='<div class="empty-state">🔍<br><br>搵唔到可確認免費提款嘅銀行 / 卡</div>';
     return;
   }
   list.innerHTML=filtered.map(b=>{
@@ -673,7 +677,7 @@ renderCompareTable();
 <script>
 if('serviceWorker' in navigator){
   let refreshing = false;
-  navigator.serviceWorker.register('./sw.js?v=2026.04.28.1').then(reg => {
+  navigator.serviceWorker.register('./sw.js?v=2026.05.12.2').then(reg => {
     reg.update();
   }).catch(() => {
     // file:// or unsupported contexts can fail registration during local preview.
