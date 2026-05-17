@@ -1,4 +1,4 @@
-const CACHE = 'atm-guide-v2026.05.12.2';
+const CACHE = 'atm-guide-v2026.05.17.1';
 const APP_SHELL = './index.html';
 
 self.addEventListener('install', e => {
